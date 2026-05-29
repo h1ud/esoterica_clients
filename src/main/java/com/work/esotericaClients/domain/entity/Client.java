@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import java.time.LocalDate;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @Builder
 
 @Entity
-
+@Table(name="clients")
 public class Client {
 
     @Id
@@ -31,11 +32,11 @@ public class Client {
     private String name;
 
     @Column(nullable=false, length=255)
-    private String password_hash;
+    private String passwordHash;
 
     @Column(nullable=false, length=20, unique=true)
     private String dni;
 
     @Column(nullable=false)
-    private LocalDate birthdar_date;
+    private LocalDate birthdarDate;
 }

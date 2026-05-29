@@ -1,6 +1,7 @@
 package com.work.esotericaClients.domain.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name="code")
 public class Code {
 
     @Id
@@ -32,13 +35,25 @@ public class Code {
     private String description;
 
     @Column(nullable=true, precision=3, scale=1)
-    private BigDecimal value_code;
+    private BigDecimal valueCode;
 
     @Column(nullable=true, precision=3, scale=1)
-    private BigDecimal discount_code;
+    private BigDecimal discountCode;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=true, length=20)
     private CodeVisibility visibility;
+
+    @Column(nullable = false)
+    private Boolean isActive;
+
+    @Column(nullable = false)
+    private Boolean isUsed;
+
+    @Column(nullable = false)
+    private LocalDate expiration;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDate createdAt;
 
 }
