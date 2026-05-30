@@ -7,7 +7,6 @@ import com.work.esotericaClients.domain.entity.Client;
 import com.work.esotericaClients.service.ClientService;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +25,12 @@ public class ClientController {
     public ClientController(ClientService service){
         this.service=service;
     }
-
+    /*
     @PostMapping
     public Client createCode(
         @RequestBody Client client){
             return service.createClient(client);
-    }
+    }*/
 
     @PutMapping("/{id}")
     public Client updateClient(
@@ -56,11 +55,4 @@ public class ClientController {
         @PathVariable String name){
             return service.getByName(name);
     }
-    
-    @GetMapping("/dni/{dni}")
-    public Optional<Client> getByDni(
-        @PathVariable String dni){
-            return service.getByDni(dni);
-    }
-
 }
