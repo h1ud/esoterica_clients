@@ -1,6 +1,7 @@
 package com.work.esotericaClients.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,29 @@ public class ClientService {
         this.repository= repository;
     }
 
-    public List<Client> getName(){
-        return repository.findAll();
+    public List<Client> getByName(String name){
+        return repository.findByName(name);
     }
 
-    public List<Client> getDni(){
-        return repository.findAll();
+    public Optional<Client> getByDni(String dni){
+        return repository.findByDni(dni);
     }
 
+    public Client createClient(Client client){
+        return repository.save(client);
+    }
+
+    public void deleteClient(Long id){
+        repository.deleteById(id);
+    }
+
+    public Client updateClient(Long id, Client client){
+        client.setId(id);
+        return repository.save(client);
+    }
+
+    //frond-end screen
+    public List<Client> getClients(){
+        return repository.findAll();
+    }
 }

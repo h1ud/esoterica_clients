@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import java.time.LocalDate;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -38,5 +41,9 @@ public class Client {
     private String dni;
 
     @Column(nullable=false)
-    private LocalDate birthdarDate;
+    private LocalDate birthdayDate;
+
+    @ManyToOne
+    @JoinColumn(name="code_id")
+    private Code code;
 }
