@@ -23,4 +23,10 @@ public class AuthController {
         @RequestBody Client client){
             return authService.register(client);
     }
+
+    @PostMapping("/login")
+    public AuthResponse login(
+        @RequestBody Client client){
+            return authService.login(client);
+        }
 }
