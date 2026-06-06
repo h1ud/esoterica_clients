@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -46,4 +45,8 @@ public class Client {
     @ManyToOne
     @JoinColumn(name="code_id")
     private Code code;
+
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private Role role;
 }
