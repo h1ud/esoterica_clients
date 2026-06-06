@@ -1,0 +1,60 @@
+<app-shell
+  eyebrow="Grimorio"
+  title="Perfil"
+  description="Datos principales, rol y avance dentro del círculo Esotérica."
+>
+  <div shell-actions>
+    <a class="button button--secondary" routerLink="/dashboard">Volver al inicio</a>
+  </div>
+
+  @if (user(); as client) {
+    <section class="profile-panel" aria-labelledby="profile-title">
+      <div class="profile-summary">
+        <span class="profile-avatar" aria-hidden="true">{{ initials() }}</span>
+        <div>
+          <p class="eyebrow">Cuenta despierta</p>
+          <h2 id="profile-title">{{ fullName() }}</h2>
+          <p>{{ isVip() ? 'VIP de Esotérica' : roleLabel() + ' de Esotérica' }}</p>
+        </div>
+      </div>
+
+      <dl class="profile-info">
+        <div>
+          <dt>DNI</dt>
+          <dd>{{ client.dni }}</dd>
+        </div>
+
+        <div>
+          <dt>Fecha de nacimiento</dt>
+          <dd>{{ formatDate(client.fechaNacimiento) }}</dd>
+        </div>
+
+        <div>
+          <dt>Rol</dt>
+          <dd>{{ roleLabel() }}</dd>
+        </div>
+
+        <div>
+          <dt>Círculo VIP</dt>
+          <dd>
+            @if (isVip()) {
+              Activo
+            } @else {
+              {{ vipRemainingProducts() }} por despertar
+            }
+          </dd>
+        </div>
+
+        <div>
+          <dt>Productos semanales</dt>
+          <dd>{{ weeklyProductCount() }} / {{ vipRequiredProducts() }}</dd>
+        </div>
+      </dl>
+    </section>
+  } @else {
+    <div class="empty-state">
+      <h2>Grimorio no disponible</h2>
+      <p>Los invitados no tienen datos de cliente asociados. Crea una cuenta para guardar tu perfil.</p>
+    </div>
+  }
+</app-shell>

@@ -43,6 +43,21 @@ public class Client {
     @Column(nullable=false)
     private LocalDate birthdayDate;
 
+    @Column(nullable=false, length=20)
+    @Builder.Default
+    private String role = "client";
+
+    @Column(nullable=false)
+    @Builder.Default
+    private Integer weeklyProductCount = 0;
+
+    @Column(nullable=false)
+    @Builder.Default
+    private Boolean vip = false;
+
+    @Column
+    private LocalDate vipSince;
+
     @ManyToOne
     @JoinColumn(name="code_id")
     private Code code;

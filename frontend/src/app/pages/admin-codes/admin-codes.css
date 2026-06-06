@@ -1,0 +1,259 @@
+.admin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.codes-panel,
+.form-panel,
+.code-card {
+  min-width: 0;
+  border: 1px solid rgba(233, 222, 214, 0.82);
+  border-radius: 20px;
+  background: rgba(255, 253, 251, 0.86);
+  box-shadow: var(--soft-shadow);
+}
+
+.codes-panel,
+.form-panel {
+  padding: 20px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.panel-header h2,
+.code-card h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-heading);
+}
+
+.panel-header h2 {
+  font-size: 1.22rem;
+}
+
+.loading-state {
+  margin: 0;
+  color: var(--muted);
+}
+
+.codes-list {
+  display: grid;
+  gap: 12px;
+}
+
+.code-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  padding: 15px;
+}
+
+.code-card:nth-child(1) {
+  background: linear-gradient(135deg, rgba(246, 217, 216, 0.6), rgba(255, 253, 251, 0.94));
+}
+
+.code-card:nth-child(2) {
+  background: linear-gradient(135deg, rgba(234, 217, 246, 0.54), rgba(255, 253, 251, 0.94));
+}
+
+.code-card:nth-child(3) {
+  background: linear-gradient(135deg, rgba(215, 237, 223, 0.68), rgba(255, 253, 251, 0.94));
+}
+
+.code-card.is-editing {
+  border-color: rgba(185, 141, 141, 0.7);
+  box-shadow: 0 0 0 4px rgba(185, 141, 141, 0.12);
+}
+
+.code-card__title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.code-card h3 {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.code-card p {
+  margin: 7px 0 12px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.code-card__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.code-card__meta div {
+  min-width: 0;
+  border-radius: 14px;
+  background: rgba(255, 253, 251, 0.72);
+  padding: 10px;
+}
+
+.code-card__meta dt {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.code-card__meta dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+
+.code-card__actions {
+  min-width: 108px;
+}
+
+.row-actions,
+.delete-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.delete-confirm {
+  max-width: 210px;
+  align-items: center;
+}
+
+.delete-confirm span {
+  color: var(--danger);
+  font-weight: 900;
+}
+
+.mini-button {
+  min-height: 32px;
+  border-radius: 999px;
+  background: rgba(255, 253, 251, 0.84);
+  color: var(--ink);
+  padding: 0 11px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.mini-button--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.code-form {
+  display: grid;
+  gap: 13px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.form-field {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--surface-muted);
+  color: var(--ink);
+  padding: 10px 11px;
+}
+
+.form-field input,
+.form-field select {
+  min-height: 42px;
+}
+
+.form-field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.form-field input.invalid,
+.form-field textarea.invalid,
+.form-field select.invalid {
+  border-color: var(--danger);
+}
+
+.checks-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.check-field {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 9px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.check-field input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+@media (max-width: 1180px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .code-card,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .code-card__actions,
+  .row-actions,
+  .delete-confirm {
+    justify-content: flex-start;
+  }
+}

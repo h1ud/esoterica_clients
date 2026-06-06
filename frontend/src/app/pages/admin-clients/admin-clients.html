@@ -1,0 +1,230 @@
+<app-shell
+  eyebrow="Custodia"
+  title="Clientes y círculo VIP"
+  description="Observa el avance semanal, ajusta la meta VIP y administra a los miembros del obrador."
+>
+  <div shell-actions>
+    <button class="button button--secondary" type="button" (click)="loadData()" [disabled]="isLoading()">
+      Actualizar
+    </button>
+  </div>
+
+  <section class="metrics-grid" aria-label="Resumen de clientes">
+    <article class="metric-card">
+      <span>{{ clients().length }}</span>
+      <p>Miembros</p>
+    </article>
+    <article class="metric-card">
+      <span>{{ vipClientsCount() }}</span>
+      <p>VIP</p>
+    </article>
+    <article class="metric-card">
+      <span>{{ totalWeeklyProducts() }}</span>
+      <p>Productos semanales</p>
+    </article>
+  </section>
+
+  <section class="settings-panel" aria-labelledby="settings-title">
+    <div>
+      <p class="eyebrow">Regla del sello</p>
+      <h2 id="settings-title">Meta para despertar VIP</h2>
+      <p>Define cuántos productos semanales convierten a un cliente normal en VIP.</p>
+    </div>
+
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" class="settings-form" novalidate>
+      <label class="form-field" for="vipRequiredProducts">
+        <span>Productos para VIP</span>
+        <input
+          id="vipRequiredProducts"
+          type="number"
+          min="1"
+          max="200"
+          formControlName="vipRequiredProducts"
+        />
+      </label>
+      <button class="button button--primary" type="submit" [disabled]="isSaving()">
+        Guardar regla
+      </button>
+    </form>
+  </section>
+
+  @if (errorMessage()) {
+    <p class="form-message form-message--error" role="alert" aria-live="polite">
+      {{ errorMessage() }}
+    </p>
+  }
+
+  @if (successMessage()) {
+    <p class="form-message form-message--success" role="status" aria-live="polite">
+      {{ successMessage() }}
+    </p>
+  }
+
+  <div class="admin-grid">
+    <section class="clients-panel" aria-labelledby="clients-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Libro de miembros</p>
+          <h2 id="clients-title">Clientes registrados</h2>
+        </div>
+        <span class="status-pill status-pill--muted">{{ clientUsersCount() }} clientes</span>
+      </div>
+
+      @if (isLoading()) {
+        <p class="loading-state" aria-live="polite">Consultando clientes…</p>
+      } @else if (clients().length === 0) {
+        <div class="empty-state">
+          <h3>Sin miembros registrados</h3>
+          <p>Cuando alguien cree una cuenta aparecerá en este libro.</p>
+        </div>
+      } @else {
+        <div class="clients-list">
+          @for (client of clients(); track client.id) {
+            <article class="client-card" [class.is-editing]="editingClientId() === client.id">
+              <div class="client-card__main">
+                <div class="client-card__title">
+                  <h3>{{ client.name }}</h3>
+                  @if (client.vip) {
+                    <span class="status-pill status-pill--success">VIP</span>
+                  } @else {
+                    <span class="status-pill status-pill--muted">{{ roleLabel(client.role) }}</span>
+                  }
+                </div>
+
+                <dl class="client-card__meta">
+                  <div>
+                    <dt>DNI</dt>
+                    <dd>{{ client.dni }}</dd>
+                  </div>
+                  <div>
+                    <dt>Nacimiento</dt>
+                    <dd>{{ formatDate(client.birthdayDate) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Ofertas activadas</dt>
+                    <dd>{{ client.usedOffersCount }}</dd>
+                  </div>
+                  <div>
+                    <dt>VIP desde</dt>
+                    <dd>{{ formatDate(client.vipSince) }}</dd>
+                  </div>
+                </dl>
+
+                <div class="client-progress" aria-label="Progreso VIP">
+                  <span [style.width.%]="progressPercent(client)"></span>
+                </div>
+                <p class="progress-copy">
+                  {{ client.weeklyProductCount }} de {{ client.vipRequiredProducts }} productos semanales.
+                  @if (!client.vip) {
+                    Faltan {{ client.vipRemainingProducts }}.
+                  }
+                </p>
+              </div>
+
+              <div class="client-card__actions">
+                @if (pendingDeleteClient()?.id === client.id) {
+                  <div class="delete-confirm" role="alert">
+                    <span>¿Retirar?</span>
+                    <button
+                      type="button"
+                      class="mini-button mini-button--danger"
+                      (click)="confirmDelete()"
+                      [disabled]="isSaving() || isCurrentSession(client)"
+                    >
+                      Confirmar
+                    </button>
+                    <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
+                      Cancelar
+                    </button>
+                  </div>
+                } @else {
+                  <div class="row-actions">
+                    <button type="button" class="mini-button" (click)="editClient(client)">
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      class="mini-button mini-button--danger"
+                      (click)="requestDelete(client)"
+                      [disabled]="isCurrentSession(client)"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="form-panel" aria-labelledby="client-form-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Ajuste manual</p>
+          <h2 id="client-form-title">
+            @if (editingClientId()) {
+              Editar cliente
+            } @else {
+              Selecciona un cliente
+            }
+          </h2>
+        </div>
+      </div>
+
+      @if (!editingClientId()) {
+        <div class="empty-state">
+          <h3>Sin cliente seleccionado</h3>
+          <p>Usa Editar en el listado para cambiar rol, progreso o estado VIP.</p>
+        </div>
+      } @else {
+        <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="client-form" novalidate>
+          <label class="form-field" for="name">
+            <span>Nombre</span>
+            <input id="name" type="text" formControlName="name" [class.invalid]="hasClientError('name')" />
+          </label>
+
+          <label class="form-field" for="dni">
+            <span>DNI</span>
+            <input id="dni" type="text" inputmode="numeric" formControlName="dni" [class.invalid]="hasClientError('dni')" />
+          </label>
+
+          <label class="form-field" for="birthdayDate">
+            <span>Fecha de nacimiento</span>
+            <input id="birthdayDate" type="date" formControlName="birthdayDate" [class.invalid]="hasClientError('birthdayDate')" />
+          </label>
+
+          <div class="form-row">
+            <label class="form-field" for="role">
+              <span>Rol</span>
+              <select id="role" formControlName="role">
+                <option value="client">Cliente</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </label>
+
+            <label class="form-field" for="weeklyProductCount">
+              <span>Productos semanales</span>
+              <input id="weeklyProductCount" type="number" min="0" max="999" formControlName="weeklyProductCount" />
+            </label>
+          </div>
+
+          <label class="check-field">
+            <input type="checkbox" formControlName="vip" />
+            <span>VIP activo</span>
+          </label>
+
+          <div class="form-actions">
+            <button class="button button--primary" type="submit" [disabled]="isSaving()">
+              {{ isSaving() ? 'Guardando…' : 'Guardar cambios' }}
+            </button>
+            <button class="button button--secondary" type="button" (click)="resetClientForm()" [disabled]="isSaving()">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+  </div>
+</app-shell>

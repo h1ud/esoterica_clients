@@ -59,6 +59,7 @@ public class Code {
     @Column(nullable = false, updatable = false)
     private LocalDate createdAt;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy="code")
     private List<Client> clients;
 }

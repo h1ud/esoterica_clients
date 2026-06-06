@@ -30,4 +30,15 @@ public class JwtService {
             .signWith(getSigningKey())
             .compact();
     }
+
+    public Long extractClientId(String token) {
+        String subject = Jwts.parser()
+            .verifyWith(getSigningKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject();
+
+        return Long.valueOf(subject);
+    }
 }

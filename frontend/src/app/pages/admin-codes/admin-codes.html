@@ -1,0 +1,227 @@
+<app-shell
+  eyebrow="Altar administrativo"
+  title="Sellos y promociones"
+  description="Crea, edita y retira ofertas encantadas para el círculo de clientes."
+>
+  <div shell-actions>
+    <button class="button button--secondary" type="button" (click)="resetForm()">
+      Nuevo sello
+    </button>
+  </div>
+
+  <div class="admin-grid">
+    <section class="codes-panel" aria-labelledby="codes-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Grimorio</p>
+          <h2 id="codes-title">Sellos registrados</h2>
+        </div>
+        <span class="status-pill status-pill--muted">{{ activeCodesCount() }} activos</span>
+      </div>
+
+      @if (isLoading()) {
+        <p class="loading-state" aria-live="polite">Cargando códigos…</p>
+      } @else if (codes().length === 0) {
+        <div class="empty-state">
+          <h3>No hay sellos creados</h3>
+          <p>Usa el formulario para encender la primera oferta.</p>
+        </div>
+      } @else {
+        <div class="codes-list">
+          @for (code of codes(); track code.id) {
+            <article class="code-card" [class.is-editing]="editingCodeId() === code.id">
+              <div class="code-card__main">
+                <div class="code-card__title">
+                  <h3>{{ code.title }}</h3>
+                  @if (code.isActive && !code.isUsed) {
+                    <span class="status-pill status-pill--success">Activo</span>
+                  } @else if (code.isUsed) {
+                    <span class="status-pill status-pill--warning">Usado</span>
+                  } @else {
+                    <span class="status-pill status-pill--muted">Inactivo</span>
+                  }
+                </div>
+
+                <p>{{ code.description }}</p>
+
+                <dl class="code-card__meta">
+                  <div>
+                    <dt>Valor</dt>
+                    <dd>{{ formatValue(code.valueCode) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Descuento</dt>
+                    <dd>{{ formatDiscount(code.discountCode) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Vence</dt>
+                    <dd>{{ formatDate(code.expiration) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Visibilidad</dt>
+                    <dd>{{ code.visibility === 'PRIVATE' ? 'Privado' : 'Global' }}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <div class="code-card__actions">
+                @if (pendingDeleteCode()?.id === code.id) {
+                  <div class="delete-confirm" role="alert">
+                    <span>¿Eliminar?</span>
+                    <button type="button" class="mini-button mini-button--danger" (click)="confirmDelete()" [disabled]="isSaving()">
+                      Confirmar
+                    </button>
+                    <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
+                      Cancelar
+                    </button>
+                  </div>
+                } @else {
+                  <div class="row-actions">
+                    <button type="button" class="mini-button" (click)="editCode(code)">
+                      Editar
+                    </button>
+                    <button type="button" class="mini-button mini-button--danger" (click)="requestDelete(code)">
+                      Eliminar
+                    </button>
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="form-panel" aria-labelledby="code-form-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Conjuro</p>
+          <h2 id="code-form-title">
+            {{ editingCodeId() ? 'Editar sello' : 'Nuevo sello' }}
+          </h2>
+        </div>
+      </div>
+
+      <form [formGroup]="codeForm" (ngSubmit)="saveCode()" class="code-form" novalidate>
+        <label class="form-field" for="title">
+          <span>Nombre del sello</span>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            autocomplete="off"
+            placeholder="Ej. Bienvenida VIP"
+            formControlName="title"
+            [class.invalid]="hasError('title')"
+          />
+        </label>
+
+        <label class="form-field" for="description">
+          <span>Mensaje de la oferta</span>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            autocomplete="off"
+            placeholder="Describe el beneficio encantado…"
+            formControlName="description"
+            [class.invalid]="hasError('description')"
+          ></textarea>
+        </label>
+
+        <div class="form-row">
+          <label class="form-field" for="valueCode">
+            <span>Valor (%)</span>
+            <input
+              id="valueCode"
+              name="valueCode"
+              type="number"
+              min="0"
+              step="0.1"
+              inputmode="decimal"
+              formControlName="valueCode"
+              [class.invalid]="hasError('valueCode')"
+            />
+          </label>
+
+          <label class="form-field" for="discountCode">
+            <span>Descuento (S/)</span>
+            <input
+              id="discountCode"
+              name="discountCode"
+              type="number"
+              min="0"
+              step="0.1"
+              inputmode="decimal"
+              formControlName="discountCode"
+              [class.invalid]="hasError('discountCode')"
+            />
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label class="form-field" for="visibility">
+            <span>Visibilidad</span>
+            <select
+              id="visibility"
+              name="visibility"
+              formControlName="visibility"
+              [class.invalid]="hasError('visibility')"
+            >
+              <option value="GLOBAL">Global</option>
+              <option value="PRIVATE">Privado</option>
+            </select>
+          </label>
+
+          <label class="form-field" for="expiration">
+            <span>Fecha de vencimiento</span>
+            <input
+              id="expiration"
+              name="expiration"
+              type="date"
+              autocomplete="off"
+              formControlName="expiration"
+              [class.invalid]="hasError('expiration')"
+            />
+          </label>
+        </div>
+
+        <div class="checks-row">
+          <label class="check-field">
+            <input type="checkbox" name="isActive" formControlName="isActive" />
+            <span>Activo</span>
+          </label>
+
+          <label class="check-field">
+            <input type="checkbox" name="isUsed" formControlName="isUsed" />
+            <span>Marcado como usado</span>
+          </label>
+        </div>
+
+        @if (errorMessage()) {
+          <p class="form-message form-message--error" role="alert" aria-live="polite">
+            {{ errorMessage() }}
+          </p>
+        }
+
+        @if (successMessage()) {
+          <p class="form-message form-message--success" role="status" aria-live="polite">
+            {{ successMessage() }}
+          </p>
+        }
+
+        <div class="form-actions">
+          <button class="button button--primary" type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Guardando…' : editingCodeId() ? 'Guardar cambios' : 'Crear sello' }}
+          </button>
+
+          @if (editingCodeId()) {
+            <button class="button button--secondary" type="button" (click)="resetForm()" [disabled]="isSaving()">
+              Cancelar
+            </button>
+          }
+        </div>
+      </form>
+    </section>
+  </div>
+</app-shell>

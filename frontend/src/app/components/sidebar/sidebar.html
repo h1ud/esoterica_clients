@@ -1,0 +1,38 @@
+<aside class="sidebar" aria-label="Barra lateral">
+  <a class="brand" [routerLink]="homeRoute()" aria-label="Ir al inicio">
+    <span class="brand__copy">
+      <strong>Esotérica</strong>
+      <small>Gestión artesanal</small>
+    </span>
+  </a>
+
+  <nav class="sidebar-nav" aria-label="Navegación principal">
+    @for (link of links(); track link.route) {
+      <a
+        [routerLink]="link.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: link.exact ?? false }"
+      >
+        <span class="ui-icon nav-icon" aria-hidden="true">{{ link.icon }}</span>
+        {{ link.label }}
+      </a>
+    }
+  </nav>
+
+  @if (showAccountPanel()) {
+    <div class="account-panel">
+      <div class="account-panel__summary">
+        <span class="account-panel__avatar" aria-hidden="true">{{ userInitials() }}</span>
+        <span class="account-panel__text">
+          <strong>{{ userName() }}</strong>
+          <small>{{ roleLabel() }}</small>
+        </span>
+      </div>
+
+      <button type="button" class="logout-button" (click)="logout()">
+        <span class="ui-icon" aria-hidden="true">↩</span>
+        Cerrar sesión
+      </button>
+    </div>
+  }
+</aside>

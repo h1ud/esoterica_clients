@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.work.esotericaClients.auth.dto.AuthResponse;
 import com.work.esotericaClients.domain.entity.Client;
+import com.work.esotericaClients.dto.ClientSummaryResponse;
 import com.work.esotericaClients.service.ClientService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,21 +23,43 @@ public class AuthService {
 
 
     public AuthResponse register(Client client){
+        client.setRole("client");
         Client savedClient=service.createClient(client);
         String token=
             jwtService.generateToken(savedClient.getId());
-        return new AuthResponse(token);
+        return buildAuthResponse(token, savedClient);
     }
 
     public AuthResponse login(Client request){
         Optional<Client> optionalClient = clientRepository.findByDni(request.getDni());
+        if (optionalClient.isEmpty()) {
+            return null;
+        }
         Client client=optionalClient.get();
         if(!client.getPasswordHash().equals(request.getPasswordHash())){
             return null;
         }
         String token=
             jwtService.generateToken(client.getId());
-        return new AuthResponse(token);
+        return buildAuthResponse(token, client);
+    }
+
+    private AuthResponse buildAuthResponse(String token, Client client) {
+        ClientSummaryResponse summary = service.toSummary(client);
+        return new AuthResponse(
+            token,
+            summary.id(),
+            summary.name(),
+            summary.dni(),
+            summary.birthdayDate(),
+            summary.role(),
+            summary.weeklyProductCount(),
+            summary.vip(),
+            summary.vipSince(),
+            summary.vipRequiredProducts(),
+            summary.vipRemainingProducts(),
+            summary.usedOffersCount()
+        );
     }
 /* 
     public void register(Client client client){

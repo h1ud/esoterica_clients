@@ -1,0 +1,51 @@
+<div class="app-shell">
+  <app-sidebar></app-sidebar>
+
+  <div class="app-shell__body">
+    <div class="topbar" aria-label="Herramientas globales">
+      <label class="topbar-search">
+        <span class="ui-icon" aria-hidden="true">⌕</span>
+        <span class="sr-only">Buscar</span>
+        <input type="search" placeholder="Buscar productos, recetas..." autocomplete="off" />
+      </label>
+
+      @if (isPublicSession()) {
+        <a class="topbar-login" routerLink="/">Iniciar sesión</a>
+      } @else {
+        <div class="topbar-actions">
+          <button type="button" aria-label="Notificaciones">
+            <span class="ui-icon" aria-hidden="true">•</span>
+          </button>
+          <button type="button" aria-label="Configuración">
+            <span class="ui-icon" aria-hidden="true">⚙</span>
+          </button>
+          <button type="button" aria-label="Cuenta">
+            <span class="ui-icon" aria-hidden="true">◉</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    <header class="app-shell__header">
+      <div class="app-shell__heading">
+        @if (eyebrow()) {
+          <p class="eyebrow">{{ eyebrow() }}</p>
+        }
+
+        <h1>{{ title() }}</h1>
+
+        @if (description()) {
+          <p>{{ description() }}</p>
+        }
+      </div>
+
+      <div class="app-shell__actions">
+        <ng-content select="[shell-actions]"></ng-content>
+      </div>
+    </header>
+
+    <main id="main-content" class="app-shell__main">
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div>

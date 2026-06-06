@@ -1,0 +1,243 @@
+<app-shell
+  eyebrow="Runas del obrador"
+  title="Ofertas encantadas"
+  description="Activa beneficios disponibles y suma productos hacia el círculo VIP."
+>
+  <div shell-actions>
+    @if (!isGuest()) {
+      <a class="button button--secondary" routerLink="/dashboard">Volver al inicio</a>
+    }
+  </div>
+
+  @if (isGuest()) {
+    <section class="public-hero" aria-labelledby="public-title">
+      <div class="public-hero__copy">
+        <p class="eyebrow">Vista libre</p>
+        <h2 id="public-title">La vitrina está abierta</h2>
+        <p>Puedes mirar ofertas y productos sin iniciar sesión. Crea una cuenta solo cuando quieras activar un beneficio y sumar camino VIP.</p>
+      </div>
+      <img
+        src="https://images.unsplash.com/photo-1558326567-98ae2405596b?auto=format&fit=crop&w=920&q=80"
+        width="920"
+        height="560"
+        alt="Mesa de pastelería con macarons y postres artesanales"
+        fetchpriority="high"
+      />
+    </section>
+  }
+
+  @if (isLoading()) {
+    <p class="loading-state" aria-live="polite">Cargando ofertas…</p>
+  } @else if (loadError()) {
+    <p class="form-message form-message--error" role="alert">{{ loadError() }}</p>
+  } @else if (!isGuest()) {
+    @if (successMessage()) {
+      <p class="form-message form-message--success" role="status" aria-live="polite">
+        {{ successMessage() }}
+      </p>
+    }
+
+    @if (clientProgress(); as progress) {
+      <section class="vip-strip" aria-labelledby="vip-progress-title">
+        <div>
+          <p class="eyebrow">Círculo VIP</p>
+          <h2 id="vip-progress-title">{{ productsRemainingLabel() }}</h2>
+          <p>{{ progress.weeklyProductCount }} de {{ progress.vipRequiredProducts }} productos semanales.</p>
+        </div>
+        <div class="vip-progress" aria-hidden="true">
+          <span [style.width.%]="vipProgressPercent()"></span>
+        </div>
+      </section>
+    }
+  }
+
+  @if (!isLoading() && !loadError() && availableOffers().length === 0) {
+    <div class="empty-state">
+      <h2>Sin sellos activos</h2>
+      <p>Cuando administración encienda nuevas ofertas aparecerán aquí.</p>
+    </div>
+  } @else if (!isLoading() && !loadError()) {
+    <section class="offers-list" aria-label="Listado de ofertas">
+      @for (offer of availableOffers(); track offer.id) {
+        <article class="offer-card">
+          <div class="offer-card__media">
+            <img
+              [src]="offerImage(offer)"
+              width="520"
+              height="360"
+              [alt]="offerImageAlt(offer)"
+              loading="lazy"
+            />
+            <span class="status-pill status-pill--success">Disponible</span>
+          </div>
+
+          <div class="offer-card__content">
+            <p class="eyebrow">Beneficio activo</p>
+            <h2>{{ offer.title }}</h2>
+            <p>{{ offer.description }}</p>
+
+            <dl class="offer-card__meta">
+              <div>
+                <dt>Valor</dt>
+                <dd>{{ formatValue(offer.valueCode) }}</dd>
+              </div>
+              <div>
+                <dt>Descuento</dt>
+                <dd>{{ formatDiscount(offer.discountCode) }}</dd>
+              </div>
+              <div>
+                <dt>Vence</dt>
+                <dd>{{ formatDate(offer.expiration) }}</dd>
+              </div>
+            </dl>
+
+            <div class="offer-card__actions">
+              @if (isGuest()) {
+                <a class="button button--primary" routerLink="/register">
+                  Crear cuenta para activar
+                </a>
+              } @else {
+                <button class="button button--primary" type="button" (click)="openActivation(offer)">
+                  Activar beneficio
+                </button>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+  }
+
+  @if (!isLoading() && !loadError()) {
+    <section class="menu-section" aria-labelledby="menu-title">
+      <div class="menu-section__header">
+        <div>
+          <p class="eyebrow">Carta completa</p>
+          <h2 id="menu-title">Todo el menú del obrador</h2>
+          <p>Después de los sellos, baja por la carta y mira todos los sabores disponibles.</p>
+        </div>
+      </div>
+
+      @if (menuItems().length === 0) {
+        <div class="empty-state">
+          <h2>La carta está en preparación</h2>
+          <p>Cuando administración cargue productos, aparecerán en esta sección.</p>
+        </div>
+      } @else {
+        @if (featuredMenuItems().length > 0) {
+          <div class="menu-group" aria-label="Productos destacados">
+            @for (item of featuredMenuItems(); track item.id) {
+              <article class="menu-item-card menu-item-card--featured">
+                <img
+                  [src]="item.imageUrl || 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80'"
+                  width="420"
+                  height="280"
+                  [alt]="'Imagen de ' + item.title"
+                  loading="lazy"
+                />
+                <div>
+                  <span class="status-pill status-pill--success">Destacado</span>
+                  <p class="eyebrow">{{ item.category }}</p>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.description }}</p>
+                  <strong>{{ formatPrice(item.price) }}</strong>
+                </div>
+              </article>
+            }
+          </div>
+        }
+
+        @if (regularMenuItems().length > 0) {
+          <div class="menu-grid" aria-label="Carta de productos">
+            @for (item of regularMenuItems(); track item.id) {
+              <article class="menu-item-card">
+                <img
+                  [src]="item.imageUrl || 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80'"
+                  width="320"
+                  height="220"
+                  [alt]="'Imagen de ' + item.title"
+                  loading="lazy"
+                />
+                <div>
+                  <p class="eyebrow">{{ item.category }}</p>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.description }}</p>
+                  <strong>{{ formatPrice(item.price) }}</strong>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      }
+    </section>
+  }
+
+  @if (selectedOffer(); as offer) {
+    <div class="modal-backdrop" role="presentation">
+      <section
+        class="activation-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="activation-title"
+      >
+        <img
+          class="activation-modal__image"
+          [src]="offerImage(offer)"
+          width="720"
+          height="360"
+          [alt]="offerImageAlt(offer)"
+        />
+
+        <div class="activation-modal__header">
+          <div>
+            <p class="eyebrow">Activación de beneficio</p>
+            <h2 id="activation-title">{{ offer.title }}</h2>
+          </div>
+          <button class="icon-button" type="button" aria-label="Cerrar" (click)="closeActivation()">
+            ×
+          </button>
+        </div>
+
+        <p>{{ offer.description }}</p>
+
+        <label class="form-field" for="productQuantity">
+          <span>Productos de esta compra</span>
+          <input
+            id="productQuantity"
+            type="number"
+            min="1"
+            max="50"
+            inputmode="numeric"
+            [formControl]="productQuantity"
+          />
+        </label>
+
+        <dl class="activation-summary">
+          <div>
+            <dt>Compra</dt>
+            <dd>{{ selectedOfferProductsLabel() }}</dd>
+          </div>
+          <div>
+            <dt>Descuento estimado</dt>
+            <dd>{{ formatActivationTotal(offer) }}</dd>
+          </div>
+        </dl>
+
+        @if (productQuantity.invalid && productQuantity.touched) {
+          <p class="form-message form-message--error" role="alert">
+            Ingresa una cantidad entre 1 y 50 productos.
+          </p>
+        }
+
+        <div class="modal-actions">
+          <button class="button button--primary" type="button" (click)="activateSelectedOffer()" [disabled]="isActivating()">
+            {{ isActivating() ? 'Activando…' : 'Confirmar activación' }}
+          </button>
+          <button class="button button--secondary" type="button" (click)="closeActivation()" [disabled]="isActivating()">
+            Cancelar
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</app-shell>

@@ -16,6 +16,21 @@ Backend Spring Boot para la plataforma de descuentos "Esoterica".
 ./gradlew.bat bootRun
 ```
 
+## Ejecutar con Docker
+```powershell
+docker compose up --build -d
+```
+
+Servicios:
+- Frontend Angular: http://localhost:4200
+- Backend Spring Boot: http://localhost:8080
+- PostgreSQL: localhost:5432
+
+Para detener todo:
+```powershell
+docker compose down
+```
+
 ## Endpoints principales
 - POST /api/clients/register
 - GET /api/clients
@@ -33,3 +48,7 @@ Backend Spring Boot para la plataforma de descuentos "Esoterica".
 ## Migraciones
 Flyway esta habilitado en `classpath:db/migration`.
 
+
+
+Backend: 99999999 / Admin123 devuelve admin.
+Backend: 70805544 / Secreto123 devuelve client.

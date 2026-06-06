@@ -1,0 +1,131 @@
+<app-shell
+  eyebrow="Grimorio personal"
+  title="Inicio del círculo"
+  [description]="shellDescription()"
+>
+  <div shell-actions>
+    @if (isGuest()) {
+      <a class="button button--primary" routerLink="/offers">Ver carta y ofertas</a>
+    } @else {
+      <a class="button button--secondary" routerLink="/offers">Ver ofertas</a>
+    }
+  </div>
+
+  <section class="overview-grid" aria-label="Resumen">
+    <article class="welcome-panel">
+      <p class="eyebrow">Aura actual</p>
+      <h2>
+        @if (currentUser(); as user) {
+          Bienvenida, {{ user.nombre }}
+        } @else {
+          Modo invitado
+        }
+      </h2>
+      <p>
+        @if (isGuest()) {
+          La vitrina pública está abierta: puedes ver ofertas y productos sin iniciar sesión.
+        } @else if (isVip()) {
+          El sello VIP está encendido: tus compras ya abrieron el umbral especial.
+        } @else {
+          Cada oferta activada suma productos al rito semanal para llegar a VIP.
+        }
+      </p>
+    </article>
+
+    <div class="metrics-grid">
+      <article class="metric-card">
+        <span class="metric-icon ui-icon" aria-hidden="true">%</span>
+        <span>{{ activeCodes().length }}</span>
+        <p>Disponibles</p>
+      </article>
+
+      <article class="metric-card">
+        <span class="metric-icon ui-icon" aria-hidden="true">✓</span>
+        <span>{{ usedCodesCount() }}</span>
+        <p>Activadas</p>
+      </article>
+
+      <article class="metric-card">
+        <span class="metric-icon ui-icon" aria-hidden="true">✦</span>
+        <span>{{ weeklyProductCount() }}</span>
+        <p>Productos</p>
+      </article>
+    </div>
+  </section>
+
+  @if (!isGuest()) {
+    <section class="vip-panel" aria-labelledby="vip-title">
+      <div>
+        <p class="eyebrow">Círculo VIP</p>
+        <h2 id="vip-title">
+          @if (isVip()) {
+            Sello VIP activo
+          } @else {
+            {{ vipRemainingProducts() }} productos para abrir el sello
+          }
+        </h2>
+        <p>
+          Meta semanal: {{ vipRequiredProducts() }} productos. Avance actual:
+          {{ weeklyProductCount() }}.
+        </p>
+      </div>
+
+      <div class="vip-progress" aria-label="Progreso hacia VIP">
+        <span [style.width.%]="vipProgressPercent()"></span>
+      </div>
+    </section>
+  }
+
+  <section class="section-panel" aria-labelledby="featured-title">
+    <div class="section-panel__header">
+      <div>
+        <p class="eyebrow">Runas dulces</p>
+        <h2 id="featured-title">Promociones reveladas</h2>
+      </div>
+    </div>
+
+    @if (isGuest()) {
+      <div class="empty-state">
+        <h3>Vitrina pública disponible</h3>
+        <p>Entra a Ofertas para ver sellos activos y toda la carta del obrador.</p>
+      </div>
+    } @else if (isLoading()) {
+      <p class="loading-state" aria-live="polite">Cargando promociones…</p>
+    } @else if (loadError()) {
+      <p class="form-message form-message--error" role="alert">{{ loadError() }}</p>
+    } @else if (featuredOffers().length === 0) {
+      <div class="empty-state">
+        <h3>Sin runas activas</h3>
+        <p>Cuando administración encienda nuevos códigos aparecerán en esta sección.</p>
+      </div>
+    } @else {
+      <div class="offer-list">
+        @for (offer of featuredOffers(); track offer.id) {
+          <article class="offer-card">
+            <span class="offer-rune ui-icon" aria-hidden="true">✦</span>
+            <div class="offer-card__main">
+              <span class="status-pill status-pill--success">Activo</span>
+              <h3>{{ offer.title }}</h3>
+              <p>{{ offer.description }}</p>
+            </div>
+
+            <dl class="offer-card__details">
+              <div>
+                <dt>Valor</dt>
+                <dd>{{ formatValue(offer.valueCode) }}</dd>
+              </div>
+              <div>
+                <dt>Descuento</dt>
+                <dd>{{ formatDiscount(offer.discountCode) }}</dd>
+              </div>
+              <div>
+                <dt>Vence</dt>
+                <dd>{{ formatDate(offer.expiration) }}</dd>
+              </div>
+            </dl>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</app-shell>

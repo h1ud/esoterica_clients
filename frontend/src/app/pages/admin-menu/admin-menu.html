@@ -1,0 +1,187 @@
+<app-shell
+  eyebrow="Carta encantada"
+  title="Menú del obrador"
+  description="Carga productos, precios e imágenes para que los clientes vean la carta completa debajo de las ofertas."
+>
+  <div shell-actions>
+    <button class="button button--secondary" type="button" (click)="resetForm()">
+      Nuevo producto
+    </button>
+  </div>
+
+  <section class="metrics-grid" aria-label="Resumen del menú">
+    <article class="metric-card">
+      <span>{{ menuItems().length }}</span>
+      <p>Productos</p>
+    </article>
+    <article class="metric-card">
+      <span>{{ availableCount() }}</span>
+      <p>Disponibles</p>
+    </article>
+    <article class="metric-card">
+      <span>{{ featuredCount() }}</span>
+      <p>Destacados</p>
+    </article>
+  </section>
+
+  @if (errorMessage()) {
+    <p class="form-message form-message--error" role="alert" aria-live="polite">
+      {{ errorMessage() }}
+    </p>
+  }
+
+  @if (successMessage()) {
+    <p class="form-message form-message--success" role="status" aria-live="polite">
+      {{ successMessage() }}
+    </p>
+  }
+
+  <div class="admin-grid">
+    <section class="menu-panel" aria-labelledby="menu-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Libro de sabores</p>
+          <h2 id="menu-title">Productos cargados</h2>
+        </div>
+        <span class="status-pill status-pill--muted">{{ categories().length }} categorías</span>
+      </div>
+
+      @if (isLoading()) {
+        <p class="loading-state" aria-live="polite">Consultando menú…</p>
+      } @else if (menuItems().length === 0) {
+        <div class="empty-state">
+          <h3>Menú vacío</h3>
+          <p>Agrega el primer producto para que aparezca en la carta pública.</p>
+        </div>
+      } @else {
+        <div class="menu-list">
+          @for (item of menuItems(); track item.id) {
+            <article class="menu-card" [class.is-editing]="editingItemId() === item.id">
+              <img
+                [src]="item.imageUrl || 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80'"
+                width="220"
+                height="160"
+                [alt]="'Imagen de ' + item.title"
+                loading="lazy"
+              />
+
+              <div class="menu-card__main">
+                <div class="menu-card__title">
+                  <div>
+                    <p class="eyebrow">{{ item.category }}</p>
+                    <h3>{{ item.title }}</h3>
+                  </div>
+                  @if (item.isAvailable) {
+                    <span class="status-pill status-pill--success">Disponible</span>
+                  } @else {
+                    <span class="status-pill status-pill--muted">Oculto</span>
+                  }
+                </div>
+
+                <p>{{ item.description }}</p>
+
+                <dl class="menu-card__meta">
+                  <div>
+                    <dt>Precio</dt>
+                    <dd>{{ formatPrice(item.price) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Destacado</dt>
+                    <dd>{{ item.isFeatured ? 'Sí' : 'No' }}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <div class="menu-card__actions">
+                @if (pendingDeleteItem()?.id === item.id) {
+                  <div class="delete-confirm" role="alert">
+                    <span>¿Retirar?</span>
+                    <button type="button" class="mini-button mini-button--danger" (click)="confirmDelete()" [disabled]="isSaving()">
+                      Confirmar
+                    </button>
+                    <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
+                      Cancelar
+                    </button>
+                  </div>
+                } @else {
+                  <div class="row-actions">
+                    <button type="button" class="mini-button" (click)="editMenuItem(item)">
+                      Editar
+                    </button>
+                    <button type="button" class="mini-button mini-button--danger" (click)="requestDelete(item)">
+                      Eliminar
+                    </button>
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="form-panel" aria-labelledby="menu-form-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Nuevo sabor</p>
+          <h2 id="menu-form-title">
+            {{ editingItemId() ? 'Editar producto' : 'Subir producto' }}
+          </h2>
+        </div>
+      </div>
+
+      <form [formGroup]="menuForm" (ngSubmit)="saveMenuItem()" class="menu-form" novalidate>
+        <label class="form-field" for="title">
+          <span>Nombre</span>
+          <input id="title" type="text" placeholder="Ej. Torta Luna" formControlName="title" [class.invalid]="hasError('title')" />
+        </label>
+
+        <label class="form-field" for="description">
+          <span>Descripción</span>
+          <textarea id="description" rows="4" placeholder="Describe el sabor…" formControlName="description" [class.invalid]="hasError('description')"></textarea>
+        </label>
+
+        <div class="form-row">
+          <label class="form-field" for="category">
+            <span>Categoría</span>
+            <input id="category" type="text" placeholder="Postres" formControlName="category" [class.invalid]="hasError('category')" />
+          </label>
+
+          <label class="form-field" for="price">
+            <span>Precio (S/)</span>
+            <input id="price" type="number" min="0" step="0.1" inputmode="decimal" formControlName="price" [class.invalid]="hasError('price')" />
+          </label>
+        </div>
+
+        <label class="form-field" for="imageUrl">
+          <span>Imagen URL</span>
+          <input id="imageUrl" type="url" placeholder="https://..." formControlName="imageUrl" />
+        </label>
+
+        <div class="checks-row">
+          <label class="check-field">
+            <input type="checkbox" formControlName="isAvailable" />
+            <span>Visible en carta</span>
+          </label>
+
+          <label class="check-field">
+            <input type="checkbox" formControlName="isFeatured" />
+            <span>Destacado</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="button button--primary" type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Guardando…' : editingItemId() ? 'Guardar cambios' : 'Subir al menú' }}
+          </button>
+
+          @if (editingItemId()) {
+            <button class="button button--secondary" type="button" (click)="resetForm()" [disabled]="isSaving()">
+              Cancelar
+            </button>
+          }
+        </div>
+      </form>
+    </section>
+  </div>
+</app-shell>

@@ -1,0 +1,116 @@
+<main id="main-content" class="auth-page">
+  <section class="auth-layout register-layout" aria-labelledby="register-title">
+    <div class="auth-brand">
+      <h1>Esotérica</h1>
+      <p>
+        Registra tus datos para acceder al portal, beneficios y códigos activos
+        del atelier.
+      </p>
+
+      <figure class="auth-photo">
+        <img
+          class="auth-image"
+          src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=880&q=80"
+          width="880"
+          height="660"
+          alt="Postre artesanal servido en plato"
+          loading="lazy"
+        />
+        <figcaption>Hecho a mano</figcaption>
+      </figure>
+    </div>
+
+    <div class="auth-panel">
+      <div class="auth-panel__header">
+        <h2 id="register-title">Crear cuenta</h2>
+        <p>Completa la ficha para entrar al círculo de clientes.</p>
+      </div>
+
+      <form class="auth-form" [formGroup]="registerForm" (ngSubmit)="register()" novalidate>
+        <div class="form-row">
+          <label class="form-field" for="nombre">
+            <span>Nombre</span>
+            <input
+              id="nombre"
+              name="nombre"
+              type="text"
+              autocomplete="given-name"
+              placeholder="Ej. Ana"
+              formControlName="nombre"
+              [class.invalid]="hasError('nombre')"
+            />
+          </label>
+
+          <label class="form-field" for="apellido">
+            <span>Apellido</span>
+            <input
+              id="apellido"
+              name="apellido"
+              type="text"
+              autocomplete="family-name"
+              placeholder="Ej. Flores"
+              formControlName="apellido"
+              [class.invalid]="hasError('apellido')"
+            />
+          </label>
+        </div>
+
+        <label class="form-field" for="dni">
+          <span>DNI</span>
+          <input
+            id="dni"
+            name="dni"
+            type="text"
+            inputmode="numeric"
+            autocomplete="username"
+            placeholder="Ej. 99999999"
+            formControlName="dni"
+            spellcheck="false"
+            [class.invalid]="hasError('dni')"
+          />
+        </label>
+
+        <label class="form-field" for="fechaNacimiento">
+          <span>Fecha de nacimiento</span>
+          <input
+            id="fechaNacimiento"
+            name="fechaNacimiento"
+            type="date"
+            autocomplete="bday"
+            formControlName="fechaNacimiento"
+            [class.invalid]="hasError('fechaNacimiento')"
+          />
+        </label>
+
+        <label class="form-field" for="password">
+          <span>Contraseña</span>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Mínimo 6 caracteres"
+            formControlName="password"
+            [class.invalid]="hasError('password')"
+          />
+        </label>
+
+        @if (errorMessage()) {
+          <p class="form-message form-message--error" role="alert" aria-live="polite">
+            {{ errorMessage() }}
+          </p>
+        }
+
+        <button class="button button--primary" type="submit" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Creando cuenta…' : 'Registrar ficha' }}
+          <span class="ui-icon" aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        ¿Ya tienes cuenta?
+        <a routerLink="/" class="text-link">Iniciar sesión</a>
+      </p>
+    </div>
+  </section>
+</main>
