@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AppShell } from '../../components/app-shell/app-shell';
@@ -11,7 +12,7 @@ type CodeVisibility = 'GLOBAL' | 'PRIVATE';
 @Component({
   selector: 'app-admin-codes',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShell, ReactiveFormsModule],
+  imports: [AppShell, ReactiveFormsModule, RouterLink],
   templateUrl: './admin-codes.html',
   styleUrl: './admin-codes.css',
 })

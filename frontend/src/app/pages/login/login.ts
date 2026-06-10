@@ -4,13 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../services/auth.service';
+import { AppFooter } from '../../components/app-footer/app-footer';
 
 const DNI_PATTERN = /^[0-9]{8}$/;
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AppFooter],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

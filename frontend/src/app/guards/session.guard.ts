@@ -7,7 +7,7 @@ export const sessionGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (!auth.hasSession()) return router.createUrlTree(['/']);
+  if (!auth.hasSession()) return router.createUrlTree(['/login']);
 
   return auth.isGuest() ? router.createUrlTree(['/offers']) : true;
 };

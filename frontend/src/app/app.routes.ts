@@ -11,8 +11,8 @@ import { AdminMenu } from './pages/admin-menu/admin-menu';
 import { sessionGuard, adminGuard } from './guards/session.guard';
 
 export const routes: Routes = [
-  { path: '', component: Login },
-  { path: 'login', redirectTo: '', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'dashboard', component: Dashboard, canActivate: [sessionGuard] },
   { path: 'offers', component: Offers },
@@ -20,5 +20,5 @@ export const routes: Routes = [
   { path: 'admin-codes', component: AdminCodes, canActivate: [sessionGuard, adminGuard] },
   { path: 'admin-clients', component: AdminClients, canActivate: [sessionGuard, adminGuard] },
   { path: 'admin-menu', component: AdminMenu, canActivate: [sessionGuard, adminGuard] },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'login' },
 ];

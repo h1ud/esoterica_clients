@@ -1,10 +1,16 @@
 <aside class="sidebar" aria-label="Barra lateral">
-  <a class="brand" [routerLink]="homeRoute()" aria-label="Ir al inicio">
-    <span class="brand__copy">
-      <strong>Esotérica</strong>
-      <small>Gestión artesanal</small>
-    </span>
-  </a>
+  <div class="sidebar__top">
+    <a class="brand" [routerLink]="homeRoute()" aria-label="Ir al inicio" (click)="notifyNavigation()">
+      <span class="brand__copy">
+        <strong>Esotérica</strong>
+        <small>Gestión artesanal</small>
+      </span>
+    </a>
+
+    <button class="sidebar__close" type="button" aria-label="Cerrar navegación" (click)="close()">
+      <span class="ui-icon" aria-hidden="true">×</span>
+    </button>
+  </div>
 
   <nav class="sidebar-nav" aria-label="Navegación principal">
     @for (link of links(); track link.route) {
@@ -12,27 +18,11 @@
         [routerLink]="link.route"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: link.exact ?? false }"
+        (click)="notifyNavigation()"
       >
         <span class="ui-icon nav-icon" aria-hidden="true">{{ link.icon }}</span>
         {{ link.label }}
       </a>
     }
   </nav>
-
-  @if (showAccountPanel()) {
-    <div class="account-panel">
-      <div class="account-panel__summary">
-        <span class="account-panel__avatar" aria-hidden="true">{{ userInitials() }}</span>
-        <span class="account-panel__text">
-          <strong>{{ userName() }}</strong>
-          <small>{{ roleLabel() }}</small>
-        </span>
-      </div>
-
-      <button type="button" class="logout-button" (click)="logout()">
-        <span class="ui-icon" aria-hidden="true">↩</span>
-        Cerrar sesión
-      </button>
-    </div>
-  }
 </aside>

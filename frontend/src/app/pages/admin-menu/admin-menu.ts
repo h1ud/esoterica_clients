@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AppShell } from '../../components/app-shell/app-shell';
@@ -9,7 +10,7 @@ import { formatSoles } from '../../utils/formatters';
 @Component({
   selector: 'app-admin-menu',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShell, ReactiveFormsModule],
+  imports: [AppShell, ReactiveFormsModule, RouterLink],
   templateUrl: './admin-menu.html',
   styleUrl: './admin-menu.css',
 })

@@ -42,6 +42,7 @@
 html {
   min-height: 100%;
   background: var(--app-bg);
+  overflow-x: hidden;
 }
 
 body {
@@ -54,6 +55,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
 }
 

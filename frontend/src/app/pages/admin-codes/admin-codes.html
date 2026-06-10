@@ -4,6 +4,9 @@
   description="Crea, edita y retira ofertas encantadas para el círculo de clientes."
 >
   <div shell-actions>
+    <a class="button button--primary" routerLink="/admin-codes" fragment="code-form-panel">
+      Crear sello
+    </a>
     <button class="button button--secondary" type="button" (click)="resetForm()">
       Nuevo sello
     </button>
@@ -92,7 +95,7 @@
       }
     </section>
 
-    <section class="form-panel" aria-labelledby="code-form-title">
+    <section id="code-form-panel" class="form-panel" aria-labelledby="code-form-title">
       <div class="panel-header">
         <div>
           <p class="eyebrow">Conjuro</p>
@@ -224,4 +227,9 @@
       </form>
     </section>
   </div>
+
+  <nav class="admin-quick-actions" aria-label="Acciones rápidas de sellos">
+    <a class="button button--primary" routerLink="/admin-codes" fragment="code-form-panel">Crear sello</a>
+    <a class="button button--secondary" routerLink="/admin-codes" fragment="codes-title">Ver sellos</a>
+  </nav>
 </app-shell>

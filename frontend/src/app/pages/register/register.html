@@ -1,4 +1,4 @@
-<main id="main-content" class="auth-page">
+<main id="main-content" class="auth-page auth-page--register">
   <section class="auth-layout register-layout" aria-labelledby="register-title">
     <div class="auth-brand">
       <h1>Esotérica</h1>
@@ -35,7 +35,7 @@
               name="nombre"
               type="text"
               autocomplete="given-name"
-              placeholder="Ej. Ana"
+              placeholder="Ej. Ana…"
               formControlName="nombre"
               [class.invalid]="hasError('nombre')"
             />
@@ -48,7 +48,7 @@
               name="apellido"
               type="text"
               autocomplete="family-name"
-              placeholder="Ej. Flores"
+              placeholder="Ej. Flores…"
               formControlName="apellido"
               [class.invalid]="hasError('apellido')"
             />
@@ -63,7 +63,7 @@
             type="text"
             inputmode="numeric"
             autocomplete="username"
-            placeholder="Ej. 99999999"
+            placeholder="Ej. 99999999…"
             formControlName="dni"
             spellcheck="false"
             [class.invalid]="hasError('dni')"
@@ -89,7 +89,7 @@
             name="password"
             type="password"
             autocomplete="new-password"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mínimo 6 caracteres…"
             formControlName="password"
             [class.invalid]="hasError('password')"
           />
@@ -109,8 +109,10 @@
 
       <p class="auth-footer">
         ¿Ya tienes cuenta?
-        <a routerLink="/" class="text-link">Iniciar sesión</a>
+        <a routerLink="/login" class="text-link">Iniciar sesión</a>
       </p>
     </div>
   </section>
+
+  <app-footer [compact]="true"></app-footer>
 </main>

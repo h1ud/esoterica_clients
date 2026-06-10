@@ -1,0 +1,17 @@
+<footer
+  class="app-footer"
+  [class.app-footer--compact]="compact()"
+  [class.app-footer--portal]="variant() === 'portal'"
+  aria-label="Pie de página"
+>
+  <div class="app-footer__brand">
+    <strong>Esotérica Patisserie</strong>
+    <span>{{ subtitle() }}</span>
+  </div>
+
+  <nav class="app-footer__nav" aria-label="Enlaces del portal">
+    @for (link of links(); track link.route) {
+      <a [routerLink]="link.route">{{ link.label }}</a>
+    }
+  </nav>
+</footer>

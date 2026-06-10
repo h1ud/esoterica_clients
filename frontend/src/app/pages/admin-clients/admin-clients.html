@@ -4,6 +4,9 @@
   description="Observa el avance semanal, ajusta la meta VIP y administra a los miembros del obrador."
 >
   <div shell-actions>
+    <a class="button button--primary" routerLink="/admin-clients" fragment="client-form-panel">
+      Gestionar cliente
+    </a>
     <button class="button button--secondary" type="button" (click)="loadData()" [disabled]="isLoading()">
       Actualizar
     </button>
@@ -36,7 +39,10 @@
         <span>Productos para VIP</span>
         <input
           id="vipRequiredProducts"
+          name="vipRequiredProducts"
           type="number"
+          inputmode="numeric"
+          autocomplete="off"
           min="1"
           max="200"
           formControlName="vipRequiredProducts"
@@ -159,7 +165,7 @@
       }
     </section>
 
-    <section class="form-panel" aria-labelledby="client-form-title">
+    <section id="client-form-panel" class="form-panel" aria-labelledby="client-form-title">
       <div class="panel-header">
         <div>
           <p class="eyebrow">Ajuste manual</p>
@@ -182,23 +188,23 @@
         <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="client-form" novalidate>
           <label class="form-field" for="name">
             <span>Nombre</span>
-            <input id="name" type="text" formControlName="name" [class.invalid]="hasClientError('name')" />
+            <input id="name" name="name" type="text" autocomplete="name" formControlName="name" [class.invalid]="hasClientError('name')" />
           </label>
 
           <label class="form-field" for="dni">
             <span>DNI</span>
-            <input id="dni" type="text" inputmode="numeric" formControlName="dni" [class.invalid]="hasClientError('dni')" />
+            <input id="dni" name="dni" type="text" inputmode="numeric" autocomplete="off" formControlName="dni" [class.invalid]="hasClientError('dni')" />
           </label>
 
           <label class="form-field" for="birthdayDate">
             <span>Fecha de nacimiento</span>
-            <input id="birthdayDate" type="date" formControlName="birthdayDate" [class.invalid]="hasClientError('birthdayDate')" />
+            <input id="birthdayDate" name="birthdayDate" type="date" autocomplete="bday" formControlName="birthdayDate" [class.invalid]="hasClientError('birthdayDate')" />
           </label>
 
           <div class="form-row">
             <label class="form-field" for="role">
               <span>Rol</span>
-              <select id="role" formControlName="role">
+              <select id="role" name="role" formControlName="role">
                 <option value="client">Cliente</option>
                 <option value="admin">Administrador</option>
               </select>
@@ -206,12 +212,12 @@
 
             <label class="form-field" for="weeklyProductCount">
               <span>Productos semanales</span>
-              <input id="weeklyProductCount" type="number" min="0" max="999" formControlName="weeklyProductCount" />
+              <input id="weeklyProductCount" name="weeklyProductCount" type="number" min="0" max="999" inputmode="numeric" autocomplete="off" formControlName="weeklyProductCount" />
             </label>
           </div>
 
           <label class="check-field">
-            <input type="checkbox" formControlName="vip" />
+            <input type="checkbox" name="vip" formControlName="vip" />
             <span>VIP activo</span>
           </label>
 
@@ -227,4 +233,9 @@
       }
     </section>
   </div>
+
+  <nav class="admin-quick-actions" aria-label="Acciones rápidas de clientes">
+    <a class="button button--primary" routerLink="/admin-clients" fragment="client-form-panel">Gestionar cliente</a>
+    <a class="button button--secondary" routerLink="/admin-clients" fragment="clients-title">Ver lista</a>
+  </nav>
 </app-shell>

@@ -1,26 +1,59 @@
-<div class="app-shell">
-  <app-sidebar></app-sidebar>
+<div class="app-shell" [class.app-shell--sidebar-open]="isSidebarOpen()">
+  <app-sidebar
+    id="app-sidebar"
+    class="app-shell__sidebar"
+    (closed)="closeSidebar()"
+    (navigated)="closeSidebar()"
+  ></app-sidebar>
+
+  @if (isSidebarOpen()) {
+    <button
+      class="sidebar-backdrop"
+      type="button"
+      aria-label="Cerrar navegación"
+      (click)="closeSidebar()"
+    ></button>
+  }
 
   <div class="app-shell__body">
     <div class="topbar" aria-label="Herramientas globales">
+      <button
+        class="menu-button"
+        type="button"
+        aria-label="Abrir navegación"
+        aria-controls="app-sidebar"
+        [attr.aria-expanded]="isSidebarOpen()"
+        (click)="toggleSidebar()"
+      >
+        <span class="ui-icon" aria-hidden="true">≡</span>
+      </button>
+
       <label class="topbar-search">
         <span class="ui-icon" aria-hidden="true">⌕</span>
         <span class="sr-only">Buscar</span>
-        <input type="search" placeholder="Buscar productos, recetas..." autocomplete="off" />
+        <input type="search" placeholder="Buscar productos, recetas…" autocomplete="off" />
       </label>
 
       @if (isPublicSession()) {
-        <a class="topbar-login" routerLink="/">Iniciar sesión</a>
+        <a class="topbar-login" routerLink="/login">Iniciar sesión</a>
       } @else {
         <div class="topbar-actions">
-          <button type="button" aria-label="Notificaciones">
-            <span class="ui-icon" aria-hidden="true">•</span>
-          </button>
-          <button type="button" aria-label="Configuración">
-            <span class="ui-icon" aria-hidden="true">⚙</span>
-          </button>
-          <button type="button" aria-label="Cuenta">
+          <a class="topbar-action" routerLink="/offers" aria-label="Ver carta y ofertas">
+            <span class="ui-icon" aria-hidden="true">%</span>
+          </a>
+          <a class="topbar-action" routerLink="/profile" aria-label="Ver perfil">
             <span class="ui-icon" aria-hidden="true">◉</span>
+          </a>
+          <div class="topbar-user" aria-label="Sesión actual">
+            <span class="topbar-user__avatar" aria-hidden="true">{{ userInitials() }}</span>
+            <span class="topbar-user__text">
+              <strong>{{ userName() }}</strong>
+              <small>{{ roleLabel() }}</small>
+            </span>
+          </div>
+          <button class="topbar-logout" type="button" aria-label="Cerrar sesión" (click)="logout()">
+            <span class="ui-icon" aria-hidden="true">↩</span>
+            <span>Salir</span>
           </button>
         </div>
       }
@@ -47,5 +80,7 @@
     <main id="main-content" class="app-shell__main">
       <ng-content></ng-content>
     </main>
+
+    <app-footer variant="portal"></app-footer>
   </div>
 </div>

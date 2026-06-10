@@ -4,6 +4,9 @@
   description="Carga productos, precios e imágenes para que los clientes vean la carta completa debajo de las ofertas."
 >
   <div shell-actions>
+    <a class="button button--primary" routerLink="/admin-menu" fragment="menu-form-panel">
+      Subir producto
+    </a>
     <button class="button button--secondary" type="button" (click)="resetForm()">
       Nuevo producto
     </button>
@@ -120,7 +123,7 @@
       }
     </section>
 
-    <section class="form-panel" aria-labelledby="menu-form-title">
+    <section id="menu-form-panel" class="form-panel" aria-labelledby="menu-form-title">
       <div class="panel-header">
         <div>
           <p class="eyebrow">Nuevo sabor</p>
@@ -133,39 +136,39 @@
       <form [formGroup]="menuForm" (ngSubmit)="saveMenuItem()" class="menu-form" novalidate>
         <label class="form-field" for="title">
           <span>Nombre</span>
-          <input id="title" type="text" placeholder="Ej. Torta Luna" formControlName="title" [class.invalid]="hasError('title')" />
+          <input id="title" name="title" type="text" autocomplete="off" placeholder="Ej. Torta Luna…" formControlName="title" [class.invalid]="hasError('title')" />
         </label>
 
         <label class="form-field" for="description">
           <span>Descripción</span>
-          <textarea id="description" rows="4" placeholder="Describe el sabor…" formControlName="description" [class.invalid]="hasError('description')"></textarea>
+          <textarea id="description" name="description" rows="4" autocomplete="off" placeholder="Describe el sabor…" formControlName="description" [class.invalid]="hasError('description')"></textarea>
         </label>
 
         <div class="form-row">
           <label class="form-field" for="category">
             <span>Categoría</span>
-            <input id="category" type="text" placeholder="Postres" formControlName="category" [class.invalid]="hasError('category')" />
+            <input id="category" name="category" type="text" autocomplete="off" placeholder="Postres…" formControlName="category" [class.invalid]="hasError('category')" />
           </label>
 
           <label class="form-field" for="price">
             <span>Precio (S/)</span>
-            <input id="price" type="number" min="0" step="0.1" inputmode="decimal" formControlName="price" [class.invalid]="hasError('price')" />
+            <input id="price" name="price" type="number" min="0" step="0.1" inputmode="decimal" autocomplete="off" formControlName="price" [class.invalid]="hasError('price')" />
           </label>
         </div>
 
         <label class="form-field" for="imageUrl">
           <span>Imagen URL</span>
-          <input id="imageUrl" type="url" placeholder="https://..." formControlName="imageUrl" />
+          <input id="imageUrl" name="imageUrl" type="url" autocomplete="off" placeholder="https://…" formControlName="imageUrl" />
         </label>
 
         <div class="checks-row">
           <label class="check-field">
-            <input type="checkbox" formControlName="isAvailable" />
+            <input type="checkbox" name="isAvailable" formControlName="isAvailable" />
             <span>Visible en carta</span>
           </label>
 
           <label class="check-field">
-            <input type="checkbox" formControlName="isFeatured" />
+            <input type="checkbox" name="isFeatured" formControlName="isFeatured" />
             <span>Destacado</span>
           </label>
         </div>
@@ -184,4 +187,9 @@
       </form>
     </section>
   </div>
+
+  <nav class="admin-quick-actions" aria-label="Acciones rápidas del menú">
+    <a class="button button--primary" routerLink="/admin-menu" fragment="menu-form-panel">Subir producto</a>
+    <a class="button button--secondary" routerLink="/admin-menu" fragment="menu-title">Ver productos</a>
+  </nav>
 </app-shell>

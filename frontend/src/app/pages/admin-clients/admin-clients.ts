@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 
 import { AppShell } from '../../components/app-shell/app-shell';
@@ -14,7 +15,7 @@ type EditableRole = 'client' | 'admin';
 @Component({
   selector: 'app-admin-clients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShell, ReactiveFormsModule],
+  imports: [AppShell, ReactiveFormsModule, RouterLink],
   templateUrl: './admin-clients.html',
   styleUrl: './admin-clients.css',
 })

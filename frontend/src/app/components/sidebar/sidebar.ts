@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
 
@@ -22,27 +22,14 @@ interface SidebarLink {
 })
 export class Sidebar {
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
 
+  readonly closed = output<void>();
+  readonly navigated = output<void>();
   readonly session = this.authService.session;
   readonly homeRoute = computed(() => {
     const role = this.session()?.role;
 
     return !role || role === 'guest' ? '/offers' : '/dashboard';
-  });
-  readonly showAccountPanel = computed(() => {
-    const role = this.session()?.role;
-
-    return role === 'admin' || role === 'client';
-  });
-  readonly userName = computed(() => this.session()?.name ?? 'Invitado');
-  readonly userInitials = computed(() => this.createInitials(this.userName()));
-  readonly roleLabel = computed(() => {
-    const role = this.session()?.role;
-
-    if (role === 'admin') return 'Administrador';
-    if (role === 'client') return 'Cliente';
-    return 'Invitado';
   });
   readonly links = computed<SidebarLink[]>(() => {
     const role = this.session()?.role;
@@ -76,20 +63,11 @@ export class Sidebar {
     return items;
   });
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+  close(): void {
+    this.closed.emit();
   }
 
-  private createInitials(name: string): string {
-    const initials = name
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join('')
-      .toUpperCase();
-
-    return initials || 'E';
+  notifyNavigation(): void {
+    this.navigated.emit();
   }
 }
