@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AppShell } from '../../components/app-shell/app-shell';
@@ -12,7 +11,7 @@ type CodeVisibility = 'GLOBAL' | 'PRIVATE';
 @Component({
   selector: 'app-admin-codes',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShell, ReactiveFormsModule, RouterLink],
+  imports: [AppShell, ReactiveFormsModule],
   templateUrl: './admin-codes.html',
   styleUrl: './admin-codes.css',
 })
@@ -22,6 +21,7 @@ export class AdminCodes implements OnInit {
   readonly codes = signal<Code[]>([]);
   readonly editingCodeId = signal<number | null>(null);
   readonly pendingDeleteCode = signal<Code | null>(null);
+  readonly showForm = signal(false);
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
   readonly errorMessage = signal('');
@@ -93,7 +93,7 @@ export class AdminCodes implements OnInit {
       next: () => {
         this.successMessage.set(id !== null ? 'Sello actualizado con éxito.' : 'Sello creado con éxito.');
         this.errorMessage.set('');
-        this.resetForm();
+        this.cancelForm();
         this.loadCodes();
       },
       error: () => {
@@ -103,8 +103,14 @@ export class AdminCodes implements OnInit {
     });
   }
 
+  openNewForm(): void {
+    this.resetForm();
+    this.showForm.set(true);
+  }
+
   editCode(code: Code): void {
     this.editingCodeId.set(code.id);
+    this.showForm.set(true);
     this.pendingDeleteCode.set(null);
     this.codeForm.patchValue({
       title: code.title,
@@ -149,6 +155,24 @@ export class AdminCodes implements OnInit {
         this.errorMessage.set('No se pudo eliminar el sello.');
       },
     });
+  }
+
+  cancelForm(): void {
+    this.showForm.set(false);
+    this.editingCodeId.set(null);
+    this.pendingDeleteCode.set(null);
+    this.codeForm.reset({
+      title: '',
+      description: '',
+      valueCode: 10,
+      discountCode: 5,
+      visibility: 'GLOBAL',
+      isActive: true,
+      isUsed: false,
+      expiration: this.dateFromNow(30),
+    });
+    this.successMessage.set('');
+    this.errorMessage.set('');
   }
 
   resetForm(): void {

@@ -1,36 +1,13 @@
-.admin-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
-  gap: 18px;
-  align-items: start;
-}
-
 .codes-panel,
-.form-panel,
 .code-card {
-  min-width: 0;
   border: 1px solid rgba(233, 222, 214, 0.82);
   border-radius: 20px;
   background: rgba(255, 253, 251, 0.86);
   box-shadow: var(--soft-shadow);
 }
 
-.codes-panel,
-.form-panel {
+.codes-panel {
   padding: 20px;
-  scroll-margin-top: 96px;
-}
-
-.form-panel {
-  position: sticky;
-  top: 78px;
-  max-height: calc(100svh - 96px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-.admin-quick-actions {
-  display: none;
 }
 
 .panel-header {
@@ -63,10 +40,11 @@
 }
 
 .code-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 14px;
-  padding: 15px;
+  padding: 16px 18px;
 }
 
 .code-card:nth-child(1) {
@@ -86,11 +64,23 @@
   box-shadow: 0 0 0 4px rgba(185, 141, 141, 0.12);
 }
 
+.code-card__main {
+  flex: 1;
+  min-width: 0;
+}
+
 .code-card__title {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
+}
+
+.code-card__badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .code-card h3 {
@@ -137,7 +127,7 @@
 }
 
 .code-card__actions {
-  min-width: 108px;
+  flex-shrink: 0;
 }
 
 .row-actions,
@@ -149,7 +139,6 @@
 }
 
 .delete-confirm {
-  max-width: 210px;
   align-items: center;
 }
 
@@ -173,6 +162,75 @@
   color: var(--danger);
 }
 
+/* Modal styles */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(63, 59, 55, 0.46);
+  padding: 16px;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 140ms ease;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgba(233, 222, 214, 0.82);
+  border-radius: 22px;
+  background: rgba(255, 253, 251, 0.98);
+  box-shadow: 0 22px 56px rgba(63, 59, 55, 0.2);
+  padding: 26px;
+  animation: slideUp 180ms ease;
+}
+
+.modal-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.modal-card__header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.modal-close:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .code-form {
   display: grid;
   gap: 13px;
@@ -180,7 +238,7 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
@@ -252,54 +310,18 @@
   margin-top: 2px;
 }
 
-@media (max-width: 1180px) {
-  .admin-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-panel {
-    position: static;
-    max-height: none;
-    overflow: visible;
-  }
-}
-
 @media (max-width: 760px) {
-  .code-card,
+  .code-card {
+    flex-direction: column;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
-  }
-
-  .admin-grid {
-    padding-bottom: 92px;
   }
 
   .code-card__actions,
   .row-actions,
   .delete-confirm {
     justify-content: flex-start;
-  }
-
-  .admin-quick-actions {
-    position: fixed;
-    right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    left: 12px;
-    z-index: 45;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    border: 1px solid rgba(233, 222, 214, 0.88);
-    border-radius: 18px;
-    background: rgba(255, 253, 251, 0.94);
-    box-shadow: 0 18px 46px rgba(63, 59, 55, 0.16);
-    padding: 10px;
-    backdrop-filter: blur(14px);
-  }
-
-  .admin-quick-actions .button {
-    min-width: 0;
-    padding: 0 12px;
-    white-space: nowrap;
   }
 }

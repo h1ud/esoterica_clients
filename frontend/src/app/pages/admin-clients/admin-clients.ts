@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 
 import { AppShell } from '../../components/app-shell/app-shell';
@@ -15,7 +14,7 @@ type EditableRole = 'client' | 'admin';
 @Component({
   selector: 'app-admin-clients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShell, ReactiveFormsModule, RouterLink],
+  imports: [AppShell, ReactiveFormsModule],
   templateUrl: './admin-clients.html',
   styleUrl: './admin-clients.css',
 })
@@ -123,6 +122,20 @@ export class AdminClients implements OnInit {
     this.errorMessage.set('');
   }
 
+  cancelForm(): void {
+    this.editingClientId.set(null);
+    this.clientForm.reset({
+      name: '',
+      dni: '',
+      birthdayDate: '',
+      role: 'client',
+      weeklyProductCount: 0,
+      vip: false,
+    });
+    this.successMessage.set('');
+    this.errorMessage.set('');
+  }
+
   saveClient(): void {
     const id = this.editingClientId();
     if (id === null) return;
@@ -153,7 +166,7 @@ export class AdminClients implements OnInit {
         );
         this.successMessage.set('Cliente actualizado.');
         this.errorMessage.set('');
-        this.resetClientForm();
+        this.cancelForm();
       },
       error: () => {
         this.successMessage.set('');

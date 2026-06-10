@@ -20,7 +20,12 @@ export class Profile {
   readonly weeklyProductCount = computed(() => this.role()?.weeklyProductCount ?? 0);
   readonly vipRequiredProducts = computed(() => this.role()?.vipRequiredProducts ?? 10);
   readonly vipRemainingProducts = computed(() => this.role()?.vipRemainingProducts ?? this.vipRequiredProducts());
+  readonly usedOffersCount = computed(() => this.role()?.usedOffersCount ?? 0);
   readonly isVip = computed(() => this.role()?.vip ?? false);
+  readonly vipProgressPercent = computed(() => {
+    if (this.vipRequiredProducts() === 0) return 0;
+    return Math.min(100, Math.round((this.weeklyProductCount() / this.vipRequiredProducts()) * 100));
+  });
   readonly initials = computed(() => {
     const user = this.user();
     return getInitials(user ? `${user.nombre} ${user.apellido}` : '');

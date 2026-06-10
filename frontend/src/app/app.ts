@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+// Componente raíz de la aplicación.
+// <router-outlet> es el punto de entrada del Angular Router: aquí se renderiza
+// la ruta activa (login, dashboard, admin-codes, etc.) según app.routes.ts
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,

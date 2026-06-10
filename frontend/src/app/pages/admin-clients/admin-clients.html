@@ -4,9 +4,6 @@
   description="Observa el avance semanal, ajusta la meta VIP y administra a los miembros del obrador."
 >
   <div shell-actions>
-    <a class="button button--primary" routerLink="/admin-clients" fragment="client-form-panel">
-      Gestionar cliente
-    </a>
     <button class="button button--secondary" type="button" (click)="loadData()" [disabled]="isLoading()">
       Actualizar
     </button>
@@ -66,125 +63,117 @@
     </p>
   }
 
-  <div class="admin-grid">
-    <section class="clients-panel" aria-labelledby="clients-title">
-      <div class="panel-header">
-        <div>
-          <p class="eyebrow">Libro de miembros</p>
-          <h2 id="clients-title">Clientes registrados</h2>
-        </div>
-        <span class="status-pill status-pill--muted">{{ clientUsersCount() }} clientes</span>
+  <section class="clients-panel" aria-labelledby="clients-title">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Libro de miembros</p>
+        <h2 id="clients-title">Clientes registrados</h2>
       </div>
+      <span class="status-pill status-pill--muted">{{ clientUsersCount() }} clientes</span>
+    </div>
 
-      @if (isLoading()) {
-        <p class="loading-state" aria-live="polite">Consultando clientes…</p>
-      } @else if (clients().length === 0) {
-        <div class="empty-state">
-          <h3>Sin miembros registrados</h3>
-          <p>Cuando alguien cree una cuenta aparecerá en este libro.</p>
-        </div>
-      } @else {
-        <div class="clients-list">
-          @for (client of clients(); track client.id) {
-            <article class="client-card" [class.is-editing]="editingClientId() === client.id">
-              <div class="client-card__main">
-                <div class="client-card__title">
-                  <h3>{{ client.name }}</h3>
+    @if (isLoading()) {
+      <p class="loading-state" aria-live="polite">Consultando clientes…</p>
+    } @else if (clients().length === 0) {
+      <div class="empty-state">
+        <h3>Sin miembros registrados</h3>
+        <p>Cuando alguien cree una cuenta aparecerá en este libro.</p>
+      </div>
+    } @else {
+      <div class="clients-list">
+        @for (client of clients(); track client.id) {
+          <article class="client-card" [class.is-editing]="editingClientId() === client.id">
+            <div class="client-card__main">
+              <div class="client-card__title">
+                <h3>{{ client.name }}</h3>
+                <div class="client-card__badge-group">
                   @if (client.vip) {
                     <span class="status-pill status-pill--success">VIP</span>
                   } @else {
                     <span class="status-pill status-pill--muted">{{ roleLabel(client.role) }}</span>
                   }
                 </div>
+              </div>
 
-                <dl class="client-card__meta">
-                  <div>
-                    <dt>DNI</dt>
-                    <dd>{{ client.dni }}</dd>
-                  </div>
-                  <div>
-                    <dt>Nacimiento</dt>
-                    <dd>{{ formatDate(client.birthdayDate) }}</dd>
-                  </div>
-                  <div>
-                    <dt>Ofertas activadas</dt>
-                    <dd>{{ client.usedOffersCount }}</dd>
-                  </div>
-                  <div>
-                    <dt>VIP desde</dt>
-                    <dd>{{ formatDate(client.vipSince) }}</dd>
-                  </div>
-                </dl>
-
-                <div class="client-progress" aria-label="Progreso VIP">
-                  <span [style.width.%]="progressPercent(client)"></span>
+              <dl class="client-card__meta">
+                <div>
+                  <dt>DNI</dt>
+                  <dd>{{ client.dni }}</dd>
                 </div>
-                <p class="progress-copy">
-                  {{ client.weeklyProductCount }} de {{ client.vipRequiredProducts }} productos semanales.
-                  @if (!client.vip) {
-                    Faltan {{ client.vipRemainingProducts }}.
-                  }
-                </p>
-              </div>
+                <div>
+                  <dt>Nacimiento</dt>
+                  <dd>{{ formatDate(client.birthdayDate) }}</dd>
+                </div>
+                <div>
+                  <dt>Ofertas activadas</dt>
+                  <dd>{{ client.usedOffersCount }}</dd>
+                </div>
+                <div>
+                  <dt>VIP desde</dt>
+                  <dd>{{ formatDate(client.vipSince) }}</dd>
+                </div>
+              </dl>
 
-              <div class="client-card__actions">
-                @if (pendingDeleteClient()?.id === client.id) {
-                  <div class="delete-confirm" role="alert">
-                    <span>¿Retirar?</span>
-                    <button
-                      type="button"
-                      class="mini-button mini-button--danger"
-                      (click)="confirmDelete()"
-                      [disabled]="isSaving() || isCurrentSession(client)"
-                    >
-                      Confirmar
-                    </button>
-                    <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
-                      Cancelar
-                    </button>
-                  </div>
-                } @else {
-                  <div class="row-actions">
-                    <button type="button" class="mini-button" (click)="editClient(client)">
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      class="mini-button mini-button--danger"
-                      (click)="requestDelete(client)"
-                      [disabled]="isCurrentSession(client)"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
+              <div class="client-progress" aria-label="Progreso VIP">
+                <span [style.width.%]="progressPercent(client)"></span>
+              </div>
+              <p class="progress-copy">
+                {{ client.weeklyProductCount }} de {{ client.vipRequiredProducts }} productos semanales.
+                @if (!client.vip) {
+                  Faltan {{ client.vipRemainingProducts }}.
                 }
-              </div>
-            </article>
-          }
-        </div>
-      }
-    </section>
+              </p>
+            </div>
 
-    <section id="client-form-panel" class="form-panel" aria-labelledby="client-form-title">
-      <div class="panel-header">
-        <div>
-          <p class="eyebrow">Ajuste manual</p>
-          <h2 id="client-form-title">
-            @if (editingClientId()) {
-              Editar cliente
-            } @else {
-              Selecciona un cliente
-            }
-          </h2>
-        </div>
+            <div class="client-card__actions">
+              @if (pendingDeleteClient()?.id === client.id) {
+                <div class="delete-confirm" role="alert">
+                  <span>¿Retirar?</span>
+                  <button
+                    type="button"
+                    class="mini-button mini-button--danger"
+                    (click)="confirmDelete()"
+                    [disabled]="isSaving() || isCurrentSession(client)"
+                  >
+                    Confirmar
+                  </button>
+                  <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
+                    Cancelar
+                  </button>
+                </div>
+              } @else {
+                <div class="row-actions">
+                  <button type="button" class="mini-button" (click)="editClient(client)">
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="mini-button mini-button--danger"
+                    (click)="requestDelete(client)"
+                    [disabled]="isCurrentSession(client)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              }
+            </div>
+          </article>
+        }
       </div>
+    }
+  </section>
 
-      @if (!editingClientId()) {
-        <div class="empty-state">
-          <h3>Sin cliente seleccionado</h3>
-          <p>Usa Editar en el listado para cambiar rol, progreso o estado VIP.</p>
+  @if (editingClientId()) {
+    <div class="modal-overlay" (click)="cancelForm()" tabindex="-1" role="presentation">
+      <div class="modal-card" role="dialog" aria-labelledby="client-form-title" (click)="$event.stopPropagation()">
+        <div class="modal-card__header">
+          <div>
+            <p class="eyebrow">Ajuste manual</p>
+            <h2 id="client-form-title">Editar cliente</h2>
+          </div>
+          <button class="modal-close" type="button" aria-label="Cerrar" (click)="cancelForm()" [disabled]="isSaving()">✕</button>
         </div>
-      } @else {
+
         <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="client-form" novalidate>
           <label class="form-field" for="name">
             <span>Nombre</span>
@@ -225,17 +214,12 @@
             <button class="button button--primary" type="submit" [disabled]="isSaving()">
               {{ isSaving() ? 'Guardando…' : 'Guardar cambios' }}
             </button>
-            <button class="button button--secondary" type="button" (click)="resetClientForm()" [disabled]="isSaving()">
+            <button class="button button--secondary" type="button" (click)="cancelForm()" [disabled]="isSaving()">
               Cancelar
             </button>
           </div>
         </form>
-      }
-    </section>
-  </div>
-
-  <nav class="admin-quick-actions" aria-label="Acciones rápidas de clientes">
-    <a class="button button--primary" routerLink="/admin-clients" fragment="client-form-panel">Gestionar cliente</a>
-    <a class="button button--secondary" routerLink="/admin-clients" fragment="clients-title">Ver lista</a>
-  </nav>
+      </div>
+    </div>
+  }
 </app-shell>

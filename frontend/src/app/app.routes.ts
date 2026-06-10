@@ -1,3 +1,7 @@
+// Configuración del Angular Router.
+// Cada ruta se mapea a un componente y puede tener guards que controlan el acceso.
+// Las rutas se renderizan dentro de <router-outlet> en app.html.
+
 import { Routes } from '@angular/router';
 
 import { Login } from './pages/login/login';
@@ -11,14 +15,14 @@ import { AdminMenu } from './pages/admin-menu/admin-menu';
 import { sessionGuard, adminGuard } from './guards/session.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'dashboard', component: Dashboard, canActivate: [sessionGuard] },
-  { path: 'offers', component: Offers },
-  { path: 'profile', component: Profile, canActivate: [sessionGuard] },
-  { path: 'admin-codes', component: AdminCodes, canActivate: [sessionGuard, adminGuard] },
-  { path: 'admin-clients', component: AdminClients, canActivate: [sessionGuard, adminGuard] },
-  { path: 'admin-menu', component: AdminMenu, canActivate: [sessionGuard, adminGuard] },
-  { path: '**', redirectTo: 'login' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },         // Raíz → redirige a login
+  { path: 'login', component: Login },                           // Página de inicio de sesión
+  { path: 'register', component: Register },                     // Registro de nuevo usuario
+  { path: 'dashboard', component: Dashboard, canActivate: [sessionGuard] },       // Panel principal (requiere sesión)
+  { path: 'offers', component: Offers },                         // Carta y ofertas (público)
+  { path: 'profile', component: Profile, canActivate: [sessionGuard] },           // Perfil del usuario (requiere sesión)
+  { path: 'admin-codes', component: AdminCodes, canActivate: [sessionGuard, adminGuard] },    // Admin: gestión de códigos
+  { path: 'admin-clients', component: AdminClients, canActivate: [sessionGuard, adminGuard] }, // Admin: gestión de clientes
+  { path: 'admin-menu', component: AdminMenu, canActivate: [sessionGuard, adminGuard] },       // Admin: gestión del menú
+  { path: '**', redirectTo: 'login' },                           // Ruta comodín: cualquier otra → login
 ];

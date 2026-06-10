@@ -8,49 +8,68 @@
   </div>
 
   @if (user(); as client) {
-    <section class="profile-panel" aria-labelledby="profile-title">
-      <div class="profile-summary">
-        <span class="profile-avatar" aria-hidden="true">{{ initials() }}</span>
-        <div>
-          <p class="eyebrow">Cuenta despierta</p>
-          <h2 id="profile-title">{{ fullName() }}</h2>
-          <p>{{ isVip() ? 'VIP de Esotérica' : roleLabel() + ' de Esotérica' }}</p>
-        </div>
-      </div>
-
-      <dl class="profile-info">
-        <div>
-          <dt>DNI</dt>
-          <dd>{{ client.dni }}</dd>
+    <div class="profile-layout">
+      <section class="profile-card profile-card--personal" aria-labelledby="profile-title">
+        <div class="profile-header">
+          <span class="profile-avatar" aria-hidden="true">{{ initials() }}</span>
+          <div>
+            <p class="eyebrow">Cuenta despierta</p>
+            <h2 id="profile-title">{{ fullName() }}</h2>
+            <p class="profile-role-tag">{{ roleLabel() }}</p>
+          </div>
         </div>
 
-        <div>
-          <dt>Fecha de nacimiento</dt>
-          <dd>{{ formatDate(client.fechaNacimiento) }}</dd>
+        <dl class="profile-grid">
+          <div>
+            <dt>DNI</dt>
+            <dd>{{ client.dni }}</dd>
+          </div>
+          <div>
+            <dt>Fecha de nacimiento</dt>
+            <dd>{{ formatDate(client.fechaNacimiento) }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="profile-card profile-card--vip" aria-labelledby="vip-title">
+        <div class="profile-header">
+          <span class="vip-icon" aria-hidden="true">
+            @if (isVip()) { ✦ } @else { ◇ }
+          </span>
+          <div>
+            <p class="eyebrow">Círculo VIP</p>
+            <h2 id="vip-title">
+              @if (isVip()) {
+                Sello despierto
+              } @else {
+                {{ vipRemainingProducts() }} productos para despertar
+              }
+            </h2>
+          </div>
+          @if (isVip()) {
+            <span class="status-pill status-pill--success">Activo</span>
+          }
         </div>
 
-        <div>
-          <dt>Rol</dt>
-          <dd>{{ roleLabel() }}</dd>
-        </div>
+        <dl class="profile-grid">
+          <div>
+            <dt>Productos semanales</dt>
+            <dd>{{ weeklyProductCount() }} / {{ vipRequiredProducts() }}</dd>
+          </div>
+          <div>
+            <dt>Ofertas activadas</dt>
+            <dd>{{ usedOffersCount() }}</dd>
+          </div>
+        </dl>
 
-        <div>
-          <dt>Círculo VIP</dt>
-          <dd>
-            @if (isVip()) {
-              Activo
-            } @else {
-              {{ vipRemainingProducts() }} por despertar
-            }
-          </dd>
-        </div>
-
-        <div>
-          <dt>Productos semanales</dt>
-          <dd>{{ weeklyProductCount() }} / {{ vipRequiredProducts() }}</dd>
-        </div>
-      </dl>
-    </section>
+        @if (!isVip()) {
+          <div class="profile-progress" aria-label="Progreso VIP">
+            <span [style.width.%]="vipProgressPercent()"></span>
+          </div>
+          <p class="profile-progress-copy">{{ weeklyProductCount() }} de {{ vipRequiredProducts() }} productos esta semana</p>
+        }
+      </section>
+    </div>
   } @else {
     <div class="empty-state">
       <h2>Grimorio no disponible</h2>

@@ -4,11 +4,11 @@
   description="Carga productos, precios e imágenes para que los clientes vean la carta completa debajo de las ofertas."
 >
   <div shell-actions>
-    <a class="button button--primary" routerLink="/admin-menu" fragment="menu-form-panel">
-      Subir producto
-    </a>
-    <button class="button button--secondary" type="button" (click)="resetForm()">
+    <button class="button button--primary" type="button" (click)="openNewForm()" [disabled]="isSaving()">
       Nuevo producto
+    </button>
+    <button class="button button--secondary" type="button" (click)="loadMenu()" [disabled]="isLoading()">
+      Actualizar
     </button>
   </div>
 
@@ -39,157 +39,148 @@
     </p>
   }
 
-  <div class="admin-grid">
-    <section class="menu-panel" aria-labelledby="menu-title">
-      <div class="panel-header">
-        <div>
-          <p class="eyebrow">Libro de sabores</p>
-          <h2 id="menu-title">Productos cargados</h2>
+  @if (showForm() || editingItemId()) {
+    <div class="modal-overlay" (click)="cancelForm()" (keydown.escape)="cancelForm()" tabindex="-1" role="presentation">
+      <div class="modal-card" role="dialog" aria-labelledby="menu-form-title" (click)="$event.stopPropagation()">
+        <div class="modal-card__header">
+          <div>
+            <p class="eyebrow">Nuevo sabor</p>
+            <h2 id="menu-form-title">
+              {{ editingItemId() ? 'Editar producto' : 'Subir producto' }}
+            </h2>
+          </div>
+          <button class="modal-close" type="button" aria-label="Cerrar" (click)="cancelForm()" [disabled]="isSaving()">✕</button>
         </div>
-        <span class="status-pill status-pill--muted">{{ categories().length }} categorías</span>
+
+        <form [formGroup]="menuForm" (ngSubmit)="saveMenuItem()" class="menu-form" novalidate>
+          <label class="form-field" for="title">
+            <span>Nombre</span>
+            <input id="title" name="title" type="text" autocomplete="off" placeholder="Ej. Torta Luna…" formControlName="title" [class.invalid]="hasError('title')" />
+          </label>
+
+          <label class="form-field" for="description">
+            <span>Descripción</span>
+            <textarea id="description" name="description" rows="3" autocomplete="off" placeholder="Describe el sabor…" formControlName="description" [class.invalid]="hasError('description')"></textarea>
+          </label>
+
+          <div class="form-row">
+            <label class="form-field" for="category">
+              <span>Categoría</span>
+              <input id="category" name="category" type="text" autocomplete="off" placeholder="Postres…" formControlName="category" [class.invalid]="hasError('category')" />
+            </label>
+
+            <label class="form-field" for="price">
+              <span>Precio (S/)</span>
+              <input id="price" name="price" type="number" min="0" step="0.1" inputmode="decimal" autocomplete="off" formControlName="price" [class.invalid]="hasError('price')" />
+            </label>
+          </div>
+
+          <label class="form-field" for="imageUrl">
+            <span>Imagen URL</span>
+            <input id="imageUrl" name="imageUrl" type="url" autocomplete="off" placeholder="https://…" formControlName="imageUrl" />
+          </label>
+
+          <div class="checks-row">
+            <label class="check-field">
+              <input type="checkbox" name="isAvailable" formControlName="isAvailable" />
+              <span>Visible en carta</span>
+            </label>
+            <label class="check-field">
+              <input type="checkbox" name="isFeatured" formControlName="isFeatured" />
+              <span>Destacado</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="button button--primary" type="submit" [disabled]="isSaving()">
+              {{ isSaving() ? 'Guardando…' : editingItemId() ? 'Guardar cambios' : 'Subir al menú' }}
+            </button>
+            <button class="button button--secondary" type="button" (click)="cancelForm()" [disabled]="isSaving()">
+              Cancelar
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
+  }
 
-      @if (isLoading()) {
-        <p class="loading-state" aria-live="polite">Consultando menú…</p>
-      } @else if (menuItems().length === 0) {
-        <div class="empty-state">
-          <h3>Menú vacío</h3>
-          <p>Agrega el primer producto para que aparezca en la carta pública.</p>
-        </div>
-      } @else {
-        <div class="menu-list">
-          @for (item of menuItems(); track item.id) {
-            <article class="menu-card" [class.is-editing]="editingItemId() === item.id">
-              <img
-                [src]="item.imageUrl || 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80'"
-                width="220"
-                height="160"
-                [alt]="'Imagen de ' + item.title"
-                loading="lazy"
-              />
+  <section class="menu-panel" aria-labelledby="menu-title">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Libro de sabores</p>
+        <h2 id="menu-title">Productos cargados</h2>
+      </div>
+      <span class="status-pill status-pill--muted">{{ categories().length }} categorías</span>
+    </div>
 
-              <div class="menu-card__main">
-                <div class="menu-card__title">
-                  <div>
-                    <p class="eyebrow">{{ item.category }}</p>
-                    <h3>{{ item.title }}</h3>
-                  </div>
+    @if (isLoading()) {
+      <p class="loading-state" aria-live="polite">Consultando menú…</p>
+    } @else if (menuItems().length === 0) {
+      <div class="empty-state">
+        <h3>Menú vacío</h3>
+        <p>Agrega el primer producto para que aparezca en la carta pública.</p>
+      </div>
+    } @else {
+      <div class="menu-list">
+        @for (item of menuItems(); track item.id) {
+          <article class="menu-card" [class.is-editing]="editingItemId() === item.id">
+            <img
+              [src]="item.imageUrl || 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80'"
+              width="260"
+              height="180"
+              [alt]="'Imagen de ' + item.title"
+              loading="lazy"
+            />
+
+            <div class="menu-card__body">
+              <div class="menu-card__header">
+                <div>
+                  <p class="eyebrow">{{ item.category }}</p>
+                  <h3>{{ item.title }}</h3>
+                </div>
+                <div class="menu-card__badge-group">
+                  @if (item.isFeatured) {
+                    <span class="status-pill status-pill--warning">Destacado</span>
+                  }
                   @if (item.isAvailable) {
                     <span class="status-pill status-pill--success">Disponible</span>
                   } @else {
                     <span class="status-pill status-pill--muted">Oculto</span>
                   }
                 </div>
-
-                <p>{{ item.description }}</p>
-
-                <dl class="menu-card__meta">
-                  <div>
-                    <dt>Precio</dt>
-                    <dd>{{ formatPrice(item.price) }}</dd>
-                  </div>
-                  <div>
-                    <dt>Destacado</dt>
-                    <dd>{{ item.isFeatured ? 'Sí' : 'No' }}</dd>
-                  </div>
-                </dl>
               </div>
 
-              <div class="menu-card__actions">
-                @if (pendingDeleteItem()?.id === item.id) {
-                  <div class="delete-confirm" role="alert">
-                    <span>¿Retirar?</span>
-                    <button type="button" class="mini-button mini-button--danger" (click)="confirmDelete()" [disabled]="isSaving()">
-                      Confirmar
-                    </button>
-                    <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
-                      Cancelar
-                    </button>
-                  </div>
-                } @else {
-                  <div class="row-actions">
+              <p class="menu-card__desc">{{ item.description }}</p>
+
+              <div class="menu-card__footer">
+                <span class="menu-card__price">{{ formatPrice(item.price) }}</span>
+
+                <div class="menu-card__actions">
+                  @if (pendingDeleteItem()?.id === item.id) {
+                    <div class="delete-confirm" role="alert">
+                      <span>¿Retirar?</span>
+                      <button type="button" class="mini-button mini-button--danger" (click)="confirmDelete()" [disabled]="isSaving()">
+                        Confirmar
+                      </button>
+                      <button type="button" class="mini-button" (click)="cancelDelete()" [disabled]="isSaving()">
+                        Cancelar
+                      </button>
+                    </div>
+                  } @else {
                     <button type="button" class="mini-button" (click)="editMenuItem(item)">
                       Editar
                     </button>
                     <button type="button" class="mini-button mini-button--danger" (click)="requestDelete(item)">
                       Eliminar
                     </button>
-                  </div>
-                }
+                  }
+                </div>
               </div>
-            </article>
-          }
-        </div>
-      }
-    </section>
-
-    <section id="menu-form-panel" class="form-panel" aria-labelledby="menu-form-title">
-      <div class="panel-header">
-        <div>
-          <p class="eyebrow">Nuevo sabor</p>
-          <h2 id="menu-form-title">
-            {{ editingItemId() ? 'Editar producto' : 'Subir producto' }}
-          </h2>
-        </div>
+            </div>
+          </article>
+        }
       </div>
+    }
+  </section>
 
-      <form [formGroup]="menuForm" (ngSubmit)="saveMenuItem()" class="menu-form" novalidate>
-        <label class="form-field" for="title">
-          <span>Nombre</span>
-          <input id="title" name="title" type="text" autocomplete="off" placeholder="Ej. Torta Luna…" formControlName="title" [class.invalid]="hasError('title')" />
-        </label>
-
-        <label class="form-field" for="description">
-          <span>Descripción</span>
-          <textarea id="description" name="description" rows="4" autocomplete="off" placeholder="Describe el sabor…" formControlName="description" [class.invalid]="hasError('description')"></textarea>
-        </label>
-
-        <div class="form-row">
-          <label class="form-field" for="category">
-            <span>Categoría</span>
-            <input id="category" name="category" type="text" autocomplete="off" placeholder="Postres…" formControlName="category" [class.invalid]="hasError('category')" />
-          </label>
-
-          <label class="form-field" for="price">
-            <span>Precio (S/)</span>
-            <input id="price" name="price" type="number" min="0" step="0.1" inputmode="decimal" autocomplete="off" formControlName="price" [class.invalid]="hasError('price')" />
-          </label>
-        </div>
-
-        <label class="form-field" for="imageUrl">
-          <span>Imagen URL</span>
-          <input id="imageUrl" name="imageUrl" type="url" autocomplete="off" placeholder="https://…" formControlName="imageUrl" />
-        </label>
-
-        <div class="checks-row">
-          <label class="check-field">
-            <input type="checkbox" name="isAvailable" formControlName="isAvailable" />
-            <span>Visible en carta</span>
-          </label>
-
-          <label class="check-field">
-            <input type="checkbox" name="isFeatured" formControlName="isFeatured" />
-            <span>Destacado</span>
-          </label>
-        </div>
-
-        <div class="form-actions">
-          <button class="button button--primary" type="submit" [disabled]="isSaving()">
-            {{ isSaving() ? 'Guardando…' : editingItemId() ? 'Guardar cambios' : 'Subir al menú' }}
-          </button>
-
-          @if (editingItemId()) {
-            <button class="button button--secondary" type="button" (click)="resetForm()" [disabled]="isSaving()">
-              Cancelar
-            </button>
-          }
-        </div>
-      </form>
-    </section>
-  </div>
-
-  <nav class="admin-quick-actions" aria-label="Acciones rápidas del menú">
-    <a class="button button--primary" routerLink="/admin-menu" fragment="menu-form-panel">Subir producto</a>
-    <a class="button button--secondary" routerLink="/admin-menu" fragment="menu-title">Ver productos</a>
-  </nav>
 </app-shell>

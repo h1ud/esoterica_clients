@@ -86,31 +86,11 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 9px;
+  margin-bottom: 16px;
 }
 
-.admin-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(310px, 0.4fr);
-  gap: 18px;
-  margin-top: 16px;
-}
-
-.clients-panel,
-.form-panel {
+.clients-panel {
   padding: 20px;
-  scroll-margin-top: 96px;
-}
-
-.form-panel {
-  position: sticky;
-  top: 78px;
-  max-height: calc(100svh - 96px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-.admin-quick-actions {
-  display: none;
 }
 
 .panel-header {
@@ -127,15 +107,21 @@
 }
 
 .client-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 14px;
-  padding: 15px;
+  padding: 16px 18px;
 }
 
 .client-card.is-editing {
   border-color: rgba(185, 141, 141, 0.7);
   box-shadow: 0 0 0 4px rgba(185, 141, 141, 0.12);
+}
+
+.client-card__main {
+  flex: 1;
+  min-width: 0;
 }
 
 .client-card__title {
@@ -144,6 +130,13 @@
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 10px;
+}
+
+.client-card__badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .client-card h3 {
@@ -200,8 +193,7 @@
 }
 
 .client-card__actions {
-  display: flex;
-  align-items: flex-start;
+  flex-shrink: 0;
 }
 
 .row-actions,
@@ -234,6 +226,75 @@
 .mini-button--danger {
   background: var(--danger-soft);
   color: var(--danger);
+}
+
+/* Modal styles */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(63, 59, 55, 0.46);
+  padding: 16px;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 140ms ease;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgba(233, 222, 214, 0.82);
+  border-radius: 22px;
+  background: rgba(255, 253, 251, 0.98);
+  box-shadow: 0 22px 56px rgba(63, 59, 55, 0.2);
+  padding: 26px;
+  animation: slideUp 180ms ease;
+}
+
+.modal-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.modal-card__header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.modal-close:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .client-form {
@@ -300,15 +361,12 @@
 
 @media (max-width: 1180px) {
   .settings-panel,
-  .admin-grid,
   .client-card {
     grid-template-columns: 1fr;
   }
 
-  .form-panel {
-    position: static;
-    max-height: none;
-    overflow: visible;
+  .client-card {
+    flex-direction: column;
   }
 
   .client-card__actions,
@@ -324,32 +382,5 @@
   .client-card__meta,
   .form-row {
     grid-template-columns: 1fr;
-  }
-
-  .admin-grid {
-    padding-bottom: 92px;
-  }
-
-  .admin-quick-actions {
-    position: fixed;
-    right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    left: 12px;
-    z-index: 45;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    border: 1px solid rgba(233, 222, 214, 0.88);
-    border-radius: 18px;
-    background: rgba(255, 253, 251, 0.94);
-    box-shadow: 0 18px 46px rgba(63, 59, 55, 0.16);
-    padding: 10px;
-    backdrop-filter: blur(14px);
-  }
-
-  .admin-quick-actions .button {
-    min-width: 0;
-    padding: 0 12px;
-    white-space: nowrap;
   }
 }

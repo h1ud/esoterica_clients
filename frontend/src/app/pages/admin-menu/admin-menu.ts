@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AppShell } from '../../components/app-shell/app-shell';
@@ -10,7 +9,7 @@ import { formatSoles } from '../../utils/formatters';
 @Component({
   selector: 'app-admin-menu',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AppShell, ReactiveFormsModule, RouterLink],
+  imports: [AppShell, ReactiveFormsModule],
   templateUrl: './admin-menu.html',
   styleUrl: './admin-menu.css',
 })
@@ -20,6 +19,7 @@ export class AdminMenu implements OnInit {
   readonly menuItems = signal<MenuItem[]>([]);
   readonly editingItemId = signal<number | null>(null);
   readonly pendingDeleteItem = signal<MenuItem | null>(null);
+  readonly showForm = signal(false);
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
   readonly errorMessage = signal('');
@@ -95,7 +95,7 @@ export class AdminMenu implements OnInit {
       next: () => {
         this.successMessage.set(id === null ? 'Producto agregado al menú.' : 'Producto actualizado.');
         this.errorMessage.set('');
-        this.resetForm();
+        this.cancelForm();
         this.loadMenu();
       },
       error: () => {
@@ -105,8 +105,14 @@ export class AdminMenu implements OnInit {
     });
   }
 
+  openNewForm(): void {
+    this.resetForm();
+    this.showForm.set(true);
+  }
+
   editMenuItem(item: MenuItem): void {
     this.editingItemId.set(item.id);
+    this.showForm.set(true);
     this.pendingDeleteItem.set(null);
     this.menuForm.reset({
       title: item.title,
@@ -150,6 +156,23 @@ export class AdminMenu implements OnInit {
         this.errorMessage.set('No se pudo retirar el producto.');
       },
     });
+  }
+
+  cancelForm(): void {
+    this.showForm.set(false);
+    this.editingItemId.set(null);
+    this.pendingDeleteItem.set(null);
+    this.menuForm.reset({
+      title: '',
+      description: '',
+      category: 'Postres',
+      price: 10,
+      imageUrl: '',
+      isAvailable: true,
+      isFeatured: false,
+    });
+    this.successMessage.set('');
+    this.errorMessage.set('');
   }
 
   resetForm(): void {

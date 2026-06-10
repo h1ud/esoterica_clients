@@ -18,10 +18,17 @@
 }
 
 .app-shell__body {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 1180px;
   min-width: 0;
+  min-height: 100%;
   padding: 14px 24px 30px;
+}
+
+.app-shell__body > .app-shell__main {
+  flex: 1;
 }
 
 .topbar {
@@ -264,6 +271,7 @@
 }
 
 .app-shell__main {
+  flex: 1;
   min-width: 0;
   padding-bottom: 22px;
 }
